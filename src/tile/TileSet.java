@@ -4,73 +4,56 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class TileSet {
 
     private final Tile[] tiles;
-    private BufferedImage pelletImage;
-    private BufferedImage powerPelletImage;
+    private final BufferedImage pelletImage;
+    private final BufferedImage powerPelletImage;
+
+    private final Tile defaultTile;
 
     public TileSet() {
-        tiles = new Tile[9]; // הגדרת גודל המערך, כעת עד 8
-        loadImages();
-    }
-
-    private void loadImages() {
         try {
-            tiles[0] = new Tile(); // רצפה ריקה
-            tiles[0].image = loadImage("/resources/tiles/000.png");
+            BufferedImage emptyImage = loadImage("/resources/tiles/000.png");
+            BufferedImage wallImage = loadImage("/resources/tiles/wall.png");
+            BufferedImage doorImage = loadImage("/resources/tiles/door.png");
 
-            tiles[1] = new Tile(); // קיר
-            tiles[1].image = loadImage("/resources/tiles/wall.png");
-            tiles[1].collision = true;
-            tiles[2] = new Tile();
-            tiles[2].image = tiles[0].image; 
-            // אריחים אחרים שמוצגים כרצפה (או סוגים ספציפיים)
-            tiles[3] = new Tile(); // טלפורט / רצפה
-            tiles[3].image = loadImage("/resources/tiles/000.png");
+            this.pelletImage = loadImage("/resources/objects/pellet.png");
+            this.powerPelletImage = loadImage("/resources/objects/powerPellet.png");
 
-            tiles[4] = new Tile(); // דלת / פתח יציאה
-            tiles[4].image = loadImage("/resources/tiles/door.png"); // אולי כדאי לתת לו קוליז'ן כשדלת סגורה
-            tiles[4].collision = true; // אם זו דלת שנסגרת / נפתחת
+            this.defaultTile = new Tile(emptyImage, false);
 
-            tiles[5] = new Tile(); // לרוב משמש ל-Power Pellet, אך כאן יכול להיות רצפה
-            tiles[5].image = loadImage("/resources/tiles/000.png");
-
-            tiles[6] = new Tile(); // אריח בית רוח
-            tiles[6].image = loadImage("/resources/tiles/000.png");
-
-            tiles[7] = new Tile(); // אריח בית רוח / נקודת חזרה
-            tiles[7].image = loadImage("/resources/tiles/000.png");
-
-            // הוספת אריח 8
-            tiles[8] = new Tile(); // אריח התחלה של Blinky
-            tiles[8].image = loadImage("/resources/tiles/000.png"); // תמונה לאריח 8
-            
-            pelletImage = loadImage("/resources/tiles/pellet.png");
-            powerPelletImage = loadImage("/resources/tiles/powerPellet.png");
-
-            // השתמש בתמונת הרצפה הריקה
+            this.tiles = new Tile[9];
+            tiles[0] = defaultTile;
+            tiles[1] = new Tile(wallImage, true);
+            tiles[2] = defaultTile;
+            tiles[3] = defaultTile;
+            tiles[4] = new Tile(doorImage, true);
+            tiles[5] = defaultTile;
+            tiles[6] = defaultTile;
+            tiles[7] = defaultTile;
+            tiles[8] = defaultTile;
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("שגיאה קריטית בטעינת תמונות האריחים.");
+            throw new RuntimeException("שגיאה קריטית בטעינת תמונות האריחים. המשחק לא יכול להתחיל.", e);
         }
     }
 
     private BufferedImage loadImage(String path) throws IOException {
-        InputStream stream = getClass().getResourceAsStream(path);
-        if (stream == null) {
-            throw new IOException("לא ניתן למצוא את המשאב: " + path);
+        try (InputStream stream = getClass().getResourceAsStream(path)) {
+            Objects.requireNonNull(stream, "לא ניתן למצוא את המשאב: " + path);
+            return ImageIO.read(stream);
         }
-        return ImageIO.read(stream);
     }
 
     public Tile getTile(int index) {
         if (index >= 0 && index < tiles.length && tiles[index] != null) {
             return tiles[index];
         }
-        return tiles[0];
+        return defaultTile;
     }
 
     public BufferedImage getPelletImage() {
