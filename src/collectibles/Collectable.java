@@ -1,7 +1,9 @@
 // New: Collectable.java interface
-package entity;
+package collectibles;
 
 import java.awt.Rectangle;
+
+import main.ScoreManager;
 
 public interface Collectable {
     boolean isCollected();

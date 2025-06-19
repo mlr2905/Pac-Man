@@ -1,9 +1,12 @@
-package entity;
+package collectibles;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+
+import main.Entity;
 import main.GamePanel;
+import main.ScoreManager;
 
 public class PowerPellet extends Entity implements Collectable {
 

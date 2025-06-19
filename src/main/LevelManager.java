@@ -1,6 +1,6 @@
 package main;
 
-import entity.Collectable;
+import collectibles.Collectable;
 
 public class LevelManager {
 

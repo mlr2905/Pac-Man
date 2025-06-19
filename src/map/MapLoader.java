@@ -2,8 +2,8 @@ package map;
 
 import main.GamePanel;
 import tile.TileSet;
-import entity.Pellet;
-import entity.PowerPellet;
+import collectibles.Pellet;
+import collectibles.PowerPellet;
 
 public class MapLoader {
 

@@ -5,12 +5,13 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
+
+import collectibles.Collectable;
 import entity.player.Player;
-import entity.Collectable;
-import entity.ScoreManager;
 import entity.ghost.Blinky;
 import tile.TileManager;
 import map.MapData;
+
 
 import java.util.ArrayList;
 

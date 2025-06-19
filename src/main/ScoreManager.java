@@ -1,9 +1,8 @@
-package entity;
+package main;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import main.GamePanel;
 
 public class ScoreManager {
 

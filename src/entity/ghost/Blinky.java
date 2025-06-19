@@ -1,8 +1,8 @@
 package entity.ghost; // ודא שכל קבצי הרוח תחת אותה חבילה
 
+import main.Entity;
 import main.GamePanel;
 import map.MapData;
-import entity.Entity;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;

@@ -1,8 +1,12 @@
-package entity;
+package collectibles;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+
+import main.Entity;
 import main.GamePanel;
+import main.ScoreManager;
+
 import java.awt.Rectangle;
 
 // Make Pellet implement the Collectable interface

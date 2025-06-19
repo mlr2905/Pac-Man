@@ -1,11 +1,12 @@
 package main;
 
-import entity.Pellet;
-import entity.PowerPellet;
 import map.MapData;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
+import collectibles.Pellet;
+import collectibles.PowerPellet;
 
 public class ObjectPlacer {
 

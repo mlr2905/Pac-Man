@@ -4,10 +4,11 @@ import main.KeyHandler;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import entity.Collectable;
-import entity.Entity;
+import collectibles.Collectable;
 
 import java.awt.Color;
+
+import main.Entity;
 import main.GamePanel;
 import java.awt.Rectangle;
 
