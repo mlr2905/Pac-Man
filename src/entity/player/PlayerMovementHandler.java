@@ -23,10 +23,7 @@ public class PlayerMovementHandler {
         this.keyH = keyH;
     }
 
-    /**
-     * The main update method for movement logic.
-     * @return true if the player moved, false otherwise.
-     */
+  
     public boolean update() {
         if (isTeleporting) {
             teleportCooldownCounter--;
@@ -164,5 +161,4 @@ public class PlayerMovementHandler {
             teleportCooldownCounter = TELEPORT_COOLDOWN_FRAMES;
         }
     }
-
 }

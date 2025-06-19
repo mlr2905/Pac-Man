@@ -1,20 +1,16 @@
 package entity.ghost;
 
-
-public class WaitingState implements BlinkyState {
-
-    private static final int SCORE_TO_TRIGGER_CHASE = 100;
-
+public class WaitingState implements GhostState {
     @Override
-    public void update(Blinky blinky) {
-        // אם הניקוד הושג, שנה מצב והתחל לצאת
-        if (blinky.gp.scoreM.getScore() >= SCORE_TO_TRIGGER_CHASE) {
-            blinky.setState(new ExitingHouseState());
-            return;
+    public void update(Ghost ghost) {
+        // בדוק אם הרוח עומדת בתנאי היציאה ועדיין לא ביקשה לצאת
+        if (ghost.gp.scoreM.getScore() >= ghost.exitScoreTrigger && !ghost.hasRequestedExit()) {
+            ghost.gp.requestToExit(ghost); // חדש: קורא למנהל התור ב-GamePanel
+            ghost.setHasRequestedExit(true); // חדש: מסמן שכבר ביקשנו כדי לא להצטרף לתור שוב ושוב
         }
 
-        // לוגיקה לתנועה אקראית בתוך בית הרוחות
-        blinky.determineRandomDirectionInHouse();
-        blinky.executeMovement(Blinky.MovementRule.IN_HOUSE);
+        // כל עוד לא קיבלנו אישור לצאת, ממשיכים לנוע בתוך הבית
+        ghost.determineRandomDirectionInHouse();
+        ghost.executeMovement(Ghost.MovementRule.IN_HOUSE);
     }
 }

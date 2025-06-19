@@ -1,54 +1,48 @@
-package entity.ghost; // ודא שכל קבצי הרוח תחת אותה חבילה
+package entity.ghost;
 
-public class ChasingState implements BlinkyState {
+public class ChasingState implements GhostState {
+    // בקובץ ChasingState.java
+    @Override
+    public void update(Ghost ghost) {
+        boolean onGrid = (ghost.x % ghost.gp.tileSize == 0) && (ghost.y % ghost.gp.tileSize == 0);
+        boolean isStuck = !ghost.canMoveInDirection(ghost.getCurrentMovingDirection(), Ghost.MovementRule.CHASE);
 
-@Override
+        int playerTileCol = ghost.gp.player.x / ghost.gp.tileSize;
+        int playerTileRow = ghost.gp.player.y / ghost.gp.tileSize;
+        boolean playerMoved = (playerTileCol != ghost.lastPlayerTileX || playerTileRow != ghost.lastPlayerTileY);
 
-public void update(Blinky blinky) {
-    // --- שלב 0: בדיקת "תפיסה" - האם הגענו לשחקן? ---
-    // נבדוק אם הרוח קרובה מספיק לשחקן כדי להחשיב את המרדף כמוצלח.
-    int distanceX = Math.abs(blinky.x - blinky.gp.player.x);
-    int distanceY = Math.abs(blinky.y - blinky.gp.player.y);
+        if (onGrid || isStuck || playerMoved) {
+            ghost.lastPlayerTileX = playerTileCol;
+            ghost.lastPlayerTileY = playerTileRow;
 
-    // אם המרחק קטן (למשל, פחות מחצי אריח), הרוח נעצרת.
-    // זה פותר את בעיית הדיוק של פיקסלים בודדים.
-    if (distanceX < blinky.gp.tileSize / 2 && distanceY < blinky.gp.tileSize / 2) {
-        blinky.setRequestedDirection("none"); // פקודה לעצור
-        blinky.executeMovement(Blinky.MovementRule.CHASE);
-        return; // סיים את העדכון הנוכחי, אין צורך לחשב נתיב.
-    }
+            int[] target = ghost.targetingStrategy.getTargetTile(ghost);
 
-    // --- אם לא הגענו, המשך בלוגיקת המרדף הרגילה ---
-    boolean onGrid = (blinky.x % blinky.gp.tileSize == 0) && (blinky.y % blinky.gp.tileSize == 0);
-    boolean isStuck = !blinky.canMoveInDirection(blinky.getCurrentMovingDirection(), Blinky.MovementRule.CHASE);
-
-    int playerTileCol = blinky.gp.player.x / blinky.gp.tileSize;
-    int playerTileRow = blinky.gp.player.y / blinky.gp.tileSize;
-    boolean playerMoved = (playerTileCol != blinky.lastPlayerTileX || playerTileRow != blinky.lastPlayerTileY);
-
-    if (onGrid || isStuck || playerMoved) {
-        blinky.lastPlayerTileX = playerTileCol;
-        blinky.lastPlayerTileY = playerTileRow;
-        
-        int blinkyTileCol = blinky.x / blinky.gp.tileSize;
-        int blinkyTileRow = blinky.y / blinky.gp.tileSize;
-        
-        String pathDirection = GhostNavigator.getShortestPathDirection(blinkyTileCol, blinkyTileRow, playerTileCol, playerTileRow);
-
-        if (!"none".equals(pathDirection)) {
-            blinky.setRequestedDirection(pathDirection);
-        } else {
-            // כאן, 'none' באמת אומר שאין נתיב, כי כבר בדקנו אם הגענו.
-            // לכן, אפשר לעבור ישירות לשיטות הגיבוי.
-            String greedyDirection = blinky.getDirectionToTile(playerTileCol, playerTileRow);
-            if (blinky.canMoveInDirection(greedyDirection, Blinky.MovementRule.CHASE)) {
-                blinky.setRequestedDirection(greedyDirection);
+            if (target[0] == -1) {
+                // מקרה קלייד: תנועה אקראית
+                ghost.determineRandomDirectionInMaze();
             } else {
-                blinky.determineRandomDirectionInMaze();
+                // מקרה מרדף רגיל
+                int targetCol = target[0];
+                int targetRow = target[1];
+                int ghostCol = ghost.x / ghost.gp.tileSize;
+                int ghostRow = ghost.y / ghost.gp.tileSize;
+
+                String pathDirection = GhostNavigator.getShortestPathDirection(ghostCol, ghostRow, targetCol,
+                        targetRow);
+
+                // --- חדש: בדיקה קריטית למניעת היתקעות ---
+                // האם הכיוון מה-AI פנוי מהמיקום הנוכחי המדויק?
+                if (ghost.canMoveInDirection(pathDirection, Ghost.MovementRule.CHASE)) {
+                    // אם כן, קבע אותו ככיוון המבוקש
+                    ghost.setRequestedDirection(pathDirection);
+                } else {
+                    // אם לא (נתקענו בפינה), חפש כל כיוון פנוי אחר כדי להיחלץ.
+                    // המתודה הקיימת לתנועה אקראית מושלמת למשימה זו.
+                    ghost.determineRandomDirectionInMaze();
+                }
             }
         }
-    }
 
-    blinky.executeMovement(Blinky.MovementRule.CHASE);
-}
+        ghost.executeMovement(Ghost.MovementRule.CHASE);
+    }
 }
