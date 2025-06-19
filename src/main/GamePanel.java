@@ -4,16 +4,20 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import javax.swing.JPanel;
 
 import collectibles.Collectable;
+import entity.ghost.BlinkyTargetingStrategy;
+import entity.ghost.ClydeTargetingStrategy;
+import entity.ghost.ExitingHouseState;
+import entity.ghost.Ghost;
+import entity.ghost.TargetingStrategy;
 import entity.player.Player;
-import entity.ghost.Blinky;
-import tile.TileManager;
 import map.MapData;
-
-
-import java.util.ArrayList;
+import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -38,10 +42,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     // ENTITIES & OBJECTS
     public Player player;
-    public Blinky blinky; // הצהרה על Blinky
+    public Ghost blinky; 
+    public Ghost clyde;
     public ArrayList<Collectable> collectables = new ArrayList<>();
     public int[] teleport1 = null;
     public int[] teleport2 = null;
+
+    // חדש: מערכת ניהול תור היציאה של הרוחות
+    private Queue<Ghost> exitQueue = new LinkedList<>();
+    private boolean isExitingLaneBusy = false;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -56,8 +65,22 @@ public class GamePanel extends JPanel implements Runnable {
         levelManager = new LevelManager(this);
 
         player = new Player(this, keyH);
-        blinky = new Blinky(this); // אתחול Blinky כאן
+        
+        initializeGhosts(); 
         findTeleportTiles();
+    }
+
+    public void initializeGhosts() {
+        // 1. הגדר את אסטרטגיות המרדף
+        TargetingStrategy blinkyStrategy = new BlinkyTargetingStrategy();
+TargetingStrategy clydeStrategy = new ClydeTargetingStrategy(8); // רדיוס 8, ללא נקודת מטרה
+        // 2. הגדר את נקודת ההתחלה (זהה לשתיהן)
+        int startTileX = 18;
+        int startTileY = 7;
+
+        // 3. צור את אובייקטי הרוחות עם הנתונים הייחודיים שלהן
+        blinky = new Ghost(this, "blinky", startTileX * tileSize, startTileY * tileSize, 100, blinkyStrategy);
+        clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 200, clydeStrategy);
     }
 
     public void findTeleportTiles() {
@@ -70,6 +93,37 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
+    
+    // --- מתודות חדשות לניהול יציאת הרוחות ---
+
+    /**
+     * מתודה שרוח קוראת לה כדי להצטרף לתור היציאה.
+     */
+    public void requestToExit(Ghost ghost) {
+        if (!exitQueue.contains(ghost)) {
+            exitQueue.add(ghost);
+        }
+    }
+
+    /**
+     * מעדכן את מצב "הרמזור" של נתיב היציאה. נקרא על ידי הרוח שסיימה לצאת.
+     */
+    public void setExitingLaneBusy(boolean busy) {
+        this.isExitingLaneBusy = busy;
+    }
+    
+    /**
+     * הסדרן הראשי. בודק אם הנתיב פנוי ונותן לרוח הבאה בתור לצאת.
+     */
+    private void manageGhostExits() {
+        // אם הנתיב לא תפוס ויש מישהו שממתין בתור
+        if (!isExitingLaneBusy && !exitQueue.isEmpty()) {
+            Ghost ghostToExit = exitQueue.poll(); // קח את הרוח הראשונה מהתור
+            isExitingLaneBusy = true; // תפוס את הנתיב (הרמזור אדום)
+            ghostToExit.setState(new ExitingHouseState()); // אמור לה להתחיל לצאת
+        }
+    }
+
 
     public void startGameThread() {
         gameThread = new Thread(this);
@@ -106,7 +160,11 @@ public class GamePanel extends JPanel implements Runnable {
             for (Collectable item : collectables) {
                 item.update();
             }
-            blinky.update(); // קריאה ל-update של Blinky
+            blinky.update();
+            clyde.update();
+            
+            // קריאה לסדרן בכל פריים כדי לבדוק אם אפשר לשחרר רוח נוספת
+            manageGhostExits();
         }
         levelManager.update();
     }
@@ -121,6 +179,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         player.draw(g2);
         blinky.draw(g2); 
+        clyde.draw(g2);
         scoreM.draw(g2, levelManager.getCurrentLevel());
         g2.dispose();
     }
