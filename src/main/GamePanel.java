@@ -17,10 +17,10 @@ import javax.swing.JPanel;
 import collectibles.Collectable;
 import entity.ghost.BlinkyTargetingStrategy;
 import entity.ghost.ClydeTargetingStrategy;
-import entity.ghost.InkyTargetingStrategy;
-import entity.ghost.PinkyTargetingStrategy;
 import entity.ghost.ExitingHouseState;
 import entity.ghost.Ghost;
+import entity.ghost.InkyTargetingStrategy;
+import entity.ghost.PinkyTargetingStrategy;
 import entity.ghost.TargetingStrategy;
 import entity.pacman.PacMan;
 import map.MapData;
@@ -60,7 +60,6 @@ public class GamePanel extends JPanel implements Runnable {
     
     BufferedImage lifeImage;
 
-    // מערכת ניהול תור היציאה של הרוחות
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;
 
@@ -288,7 +287,6 @@ public class GamePanel extends JPanel implements Runnable {
             drawLives(g2);
         }
 
-        // צייר את מסך ה-Game Over אם צריך
         if (levelManager.gameState == levelManager.gameOverState) {
             drawGameOverScreen(g2);
         }
