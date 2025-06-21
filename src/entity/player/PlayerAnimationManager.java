@@ -7,7 +7,6 @@ public class PlayerAnimationManager {
 
     private Player player;
 
-    // Animation state
     private BufferedImage[][] frames;
     private int frameIndex = 0;
     private int frameTick = 0;
@@ -28,10 +27,18 @@ public class PlayerAnimationManager {
             BufferedImage up1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/pacmanUp.png"));
 
             frames = new BufferedImage[4][3];
-            frames[0][0] = down1; frames[0][1] = down2; frames[0][2] = down1;
-            frames[1][0] = right1; frames[1][1] = down2; frames[1][2] = right1;
-            frames[2][0] = left1; frames[2][1] = down2; frames[2][2] = left1;
-            frames[3][0] = up1; frames[3][1] = down2; frames[3][2] = up1;
+            frames[0][0] = down1;
+            frames[0][1] = down2;
+            frames[0][2] = down1;
+            frames[1][0] = right1;
+            frames[1][1] = down2;
+            frames[1][2] = right1;
+            frames[2][0] = left1;
+            frames[2][1] = down2;
+            frames[2][2] = left1;
+            frames[3][0] = up1;
+            frames[3][1] = down2;
+            frames[3][2] = up1;
 
             System.out.println("Player images loaded successfully!");
         } catch (Exception e) {
@@ -39,7 +46,7 @@ public class PlayerAnimationManager {
             System.out.println("Error loading player images: " + e.getMessage());
         }
     }
-    
+
     public void updateAnimation(boolean isMoving) {
         if (isMoving) {
             frameTick++;
@@ -57,6 +64,6 @@ public class PlayerAnimationManager {
         if (frames != null && player.direction >= 0 && player.direction < frames.length) {
             return frames[player.direction][frameIndex];
         }
-        return null; // Or a default image
+        return null;
     }
 }
