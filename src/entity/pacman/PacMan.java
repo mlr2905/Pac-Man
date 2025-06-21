@@ -1,4 +1,4 @@
-package entity.player;
+package entity.pacman;
 
 import main.KeyHandler;
 import java.awt.Graphics2D;
@@ -9,26 +9,32 @@ import main.Entity;
 import main.GamePanel;
 import java.awt.Rectangle;
 
-public class Player extends Entity {
+public class PacMan extends Entity {
 
     GamePanel gp;
 
-    private PlayerMovementHandler movementHandler;
-    private PlayerAnimationManager animationManager;
-
+    private PacManMovementHandler movementHandler;
+    private PacManAnimationManager animationManager;
+    private final int defaultX, defaultY;
     public int direction = 0; 
     public Rectangle solidArea;
 
-    public Player(GamePanel gp, KeyHandler keyH) {
+    public PacMan(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
 
-        this.movementHandler = new PlayerMovementHandler(this, gp, keyH);
-        this.animationManager = new PlayerAnimationManager(this);
-
+        this.movementHandler = new PacManMovementHandler(this, gp, keyH);
+        this.animationManager = new PacManAnimationManager(this);
+this.defaultX = x; 
+    this.defaultY = y;
         solidArea = new Rectangle(8, 8, gp.tileSize - 12, gp.tileSize - 12);
         setDefaultValues();
     }
 
+    public void resetPosition() {
+    this.x = defaultX;
+    this.y = defaultY;
+    this.direction = 0; // אפס גם את כיוון התנועה
+}
     public void setDefaultValues() {
         x = (gp.screenWidth / 2) - 18 - (gp.tileSize / 2);
         y = (gp.screenHeight / 2) + 30 - (gp.tileSize / 2);
@@ -60,7 +66,7 @@ public class Player extends Entity {
         } else {
             g2.setColor(Color.WHITE);
             g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-            System.out.println("Warning: Player image is null.");
+            System.out.println("Warning: pacMan image is null.");
         }
     }
 }

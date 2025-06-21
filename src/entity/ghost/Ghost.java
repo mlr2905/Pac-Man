@@ -20,8 +20,8 @@ public class Ghost extends Entity {
     public final int exitScoreTrigger; // הניקוד שנדרש כדי לצאת מהבית
     public final TargetingStrategy targetingStrategy; // אסטרטגיית המרדף של הרוח
     private boolean hasRequestedExit = false; // דגל למניעת בקשות כפולות ליציאה
- public int lastPlayerTileX = -1;
-    public int lastPlayerTileY = -1;
+ public int lastpacManTileX = -1;
+    public int lastpacManTileY = -1;
     // נקודות קבועות ליציאה מהבית (זהה לכל הרוחות)
     public final int RETURN_TARGET_X = 18; // נקודת ביניים ביציאה (תא 8)
     public final int RETURN_TARGET_Y = 7;  // נקודת ביניים ביציאה (תא 8)
@@ -59,16 +59,22 @@ public class Ghost extends Entity {
         setDefaultValues(startX, startY);
     }
 
-    public void setDefaultValues(int startX, int startY) {
-        this.x = startX;
-        this.y = startY;
-        speed = 2;
-        currentMovingDirection = "none";
-        requestedDirection = "none";
-        gameStartedForGhost = false;
-        setState(new WaitingState()); // כל הרוחות מתחילות במצב המתנה
-    }
+    // בקובץ Ghost.java
 
+public void setDefaultValues(int startX, int startY) {
+    this.x = startX;
+    this.y = startY;
+    speed = 2;
+    currentMovingDirection = "none";
+    requestedDirection = "none";
+    gameStartedForGhost = false;
+    
+    // --- הוסף את השורה הבאה ---
+    // מאפס את הדגל כדי שהרוח תוכל לבקש לצאת שוב אחרי פסילה
+    this.hasRequestedExit = false; 
+
+    setState(new WaitingState()); // כל הרוחות מתחילות (או חוזרות) למצב המתנה
+}
     public void setState(GhostState newState) {
         this.currentState = newState;
     }
@@ -102,6 +108,9 @@ public class Ghost extends Entity {
             g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
         }
     }
+    public AnimationManager getAnimationManager() {
+    return this.animationManager;
+}
 
     public boolean moveToTarget(int targetCol, int targetRow, MovementRule rule) {
         if (Math.abs(x - targetCol * gp.tileSize) < speed && Math.abs(y - targetRow * gp.tileSize) < speed) {

@@ -2,20 +2,27 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font; // <-- ייבוא חדש
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import collectibles.Collectable;
 import entity.ghost.BlinkyTargetingStrategy;
 import entity.ghost.ClydeTargetingStrategy;
+import entity.ghost.InkyTargetingStrategy;
+import entity.ghost.PinkyTargetingStrategy;
 import entity.ghost.ExitingHouseState;
 import entity.ghost.Ghost;
 import entity.ghost.TargetingStrategy;
-import entity.player.Player;
+import entity.pacman.PacMan;
 import map.MapData;
 import tile.TileManager;
 
@@ -39,16 +46,21 @@ public class GamePanel extends JPanel implements Runnable {
     public TileManager tileM;
     public ScoreManager scoreM;
     public LevelManager levelManager;
+    public int lives;
 
     // ENTITIES & OBJECTS
-    public Player player;
+    public PacMan pacMan;
     public Ghost blinky; 
+    public Ghost pinky;
+    public Ghost inky;
     public Ghost clyde;
     public ArrayList<Collectable> collectables = new ArrayList<>();
     public int[] teleport1 = null;
     public int[] teleport2 = null;
+    
+    BufferedImage lifeImage;
 
-    // חדש: מערכת ניהול תור היציאה של הרוחות
+    // מערכת ניהול תור היציאה של הרוחות
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;
 
@@ -59,28 +71,36 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyH);
         this.setFocusable(true);
 
-        // Initialize managers
         tileM = new TileManager(this);
         scoreM = new ScoreManager(this);
         levelManager = new LevelManager(this);
-
-        player = new Player(this, keyH);
+        lives = 3;
+        pacMan = new PacMan(this, keyH);
         
         initializeGhosts(); 
         findTeleportTiles();
+        
+        try {
+            lifeImage = ImageIO.read(getClass().getResourceAsStream("/resources/PacMan/pacmanRight.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading life image!");
+        }
     }
 
     public void initializeGhosts() {
-        // 1. הגדר את אסטרטגיות המרדף
         TargetingStrategy blinkyStrategy = new BlinkyTargetingStrategy();
-TargetingStrategy clydeStrategy = new ClydeTargetingStrategy(8); // רדיוס 8, ללא נקודת מטרה
-        // 2. הגדר את נקודת ההתחלה (זהה לשתיהן)
+        TargetingStrategy pinkyStrategy = new PinkyTargetingStrategy(4);
+        TargetingStrategy inkyStrategy = new InkyTargetingStrategy();
+        TargetingStrategy clydeStrategy = new ClydeTargetingStrategy(8);
+
         int startTileX = 18;
         int startTileY = 7;
 
-        // 3. צור את אובייקטי הרוחות עם הנתונים הייחודיים שלהן
         blinky = new Ghost(this, "blinky", startTileX * tileSize, startTileY * tileSize, 100, blinkyStrategy);
-        clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 200, clydeStrategy);
+        pinky = new Ghost(this, "pinky", startTileX * tileSize, startTileY * tileSize, 200, pinkyStrategy);
+        inky = new Ghost(this, "inky", startTileX * tileSize, startTileY * tileSize, 300, inkyStrategy);
+        clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 400, clydeStrategy);
     }
 
     public void findTeleportTiles() {
@@ -94,36 +114,78 @@ TargetingStrategy clydeStrategy = new ClydeTargetingStrategy(8); // רדיוס 8
         }
     }
     
-    // --- מתודות חדשות לניהול יציאת הרוחות ---
-
-    /**
-     * מתודה שרוח קוראת לה כדי להצטרף לתור היציאה.
-     */
     public void requestToExit(Ghost ghost) {
         if (!exitQueue.contains(ghost)) {
             exitQueue.add(ghost);
         }
     }
 
-    /**
-     * מעדכן את מצב "הרמזור" של נתיב היציאה. נקרא על ידי הרוח שסיימה לצאת.
-     */
     public void setExitingLaneBusy(boolean busy) {
         this.isExitingLaneBusy = busy;
     }
     
-    /**
-     * הסדרן הראשי. בודק אם הנתיב פנוי ונותן לרוח הבאה בתור לצאת.
-     */
     private void manageGhostExits() {
-        // אם הנתיב לא תפוס ויש מישהו שממתין בתור
         if (!isExitingLaneBusy && !exitQueue.isEmpty()) {
-            Ghost ghostToExit = exitQueue.poll(); // קח את הרוח הראשונה מהתור
-            isExitingLaneBusy = true; // תפוס את הנתיב (הרמזור אדום)
-            ghostToExit.setState(new ExitingHouseState()); // אמור לה להתחיל לצאת
+            Ghost ghostToExit = exitQueue.poll();
+            isExitingLaneBusy = true;
+            ghostToExit.setState(new ExitingHouseState());
+        }
+    }
+    
+    private void checkCollision() {
+        Rectangle pacManBounds = new Rectangle(pacMan.x, pacMan.y, tileSize, tileSize);
+        Ghost[] allGhosts = {blinky, pinky, inky, clyde};
+
+        for (Ghost ghost : allGhosts) {
+            if (ghost == null) continue;
+            Rectangle ghostBounds = new Rectangle(ghost.x, ghost.y, tileSize, tileSize);
+            
+            if (pacManBounds.intersects(ghostBounds)) {
+                pacManHit();
+                break;
+            }
         }
     }
 
+    public void pacManHit() {
+        lives--;
+
+        if (lives <= 0) {
+            levelManager.gameState = levelManager.gameOverState;
+        } else {
+            // pacMan.resetPosition(); <-- נשתמש ב-setDefaultValues כדי לאפס הכל
+            pacMan.setDefaultValues();
+
+            int startTileX = 18;
+            int startTileY = 7;
+            blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+            pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+            inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+            clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+        }
+    }
+
+    // --- חדש: מתודה לאתחול המשחק מחדש ---
+    public void restartGame() {
+        // 1. אפס חיים
+        this.lives = 3;
+
+        // 2. אפס ניקוד (ודא שיש לך מתודת reset ב-ScoreManager)
+        this.scoreM.reset(); 
+
+        // 3. אפס את מיקום פקמן
+        this.pacMan.setDefaultValues();
+
+        // 4. אתחל את הרוחות מחדש למצבן ההתחלתי
+        initializeGhosts();
+        
+        // 5. נקה את תור היציאה של הרוחות
+        exitQueue.clear();
+        isExitingLaneBusy = false;
+        
+        // 6. חזור למצב משחק רגיל
+        levelManager.gameState = levelManager.playState;
+    }
 
     public void startGameThread() {
         gameThread = new Thread(this);
@@ -155,32 +217,82 @@ TargetingStrategy clydeStrategy = new ClydeTargetingStrategy(8); // רדיוס 8
     }
 
     public void update() {
+        // --- שינוי: מעדכנים את הדמויות רק אם המשחק במצב "playState" ---
         if (levelManager.gameState == levelManager.playState) {
-            player.update();
+            pacMan.update();
             for (Collectable item : collectables) {
                 item.update();
             }
             blinky.update();
+            pinky.update();
+            inky.update();
             clyde.update();
             
-            // קריאה לסדרן בכל פריים כדי לבדוק אם אפשר לשחרר רוח נוספת
             manageGhostExits();
+            checkCollision();
         }
+        
+        // מעדכנים את מנהל השלבים תמיד, כדי שיוכל לטפל גם במצבים אחרים
         levelManager.update();
+    }
+
+    private void drawLives(Graphics2D g2) {
+        if (lifeImage == null) return;
+        for (int i = 0; i < lives ; i++) {
+            g2.drawImage(lifeImage, tileSize * (i + 1), screenHeight - tileSize - 10, tileSize, tileSize, null);
+        }
+    }
+
+    // --- חדש: מתודות לציור מסך סיום המשחק ---
+    private void drawGameOverScreen(Graphics2D g2) {
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, screenWidth, screenHeight);
+
+        g2.setFont(new Font("Arial", Font.BOLD, 80));
+        g2.setColor(Color.red);
+
+        String text = "GAME OVER";
+        int x = getXforCenteredText(text, g2);
+        int y = screenHeight / 2;
+        g2.drawString(text, x, y);
+
+        g2.setFont(new Font("Arial", Font.PLAIN, 30));
+        g2.setColor(Color.white);
+        text = "Press Enter to Restart";
+        x = getXforCenteredText(text, g2);
+        g2.drawString(text, x, y + 60);
+    }
+
+    private int getXforCenteredText(String text, Graphics2D g2) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return screenWidth / 2 - length / 2;
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        tileM.draw(g2);
-        for (Collectable item : collectables) {
-            item.draw(g2);
+        
+        // --- שינוי: הוספת לוגיקה לציור לפי מצב המשחק ---
+        if (levelManager.gameState != levelManager.transitionState) {
+            tileM.draw(g2);
+            for (Collectable item : collectables) {
+                item.draw(g2);
+            }
+            pacMan.draw(g2);
+            blinky.draw(g2); 
+            pinky.draw(g2);
+            inky.draw(g2);
+            clyde.draw(g2);
+            scoreM.draw(g2, levelManager.getCurrentLevel());
+            drawLives(g2);
         }
-        player.draw(g2);
-        blinky.draw(g2); 
-        clyde.draw(g2);
-        scoreM.draw(g2, levelManager.getCurrentLevel());
+
+        // צייר את מסך ה-Game Over אם צריך
+        if (levelManager.gameState == levelManager.gameOverState) {
+            drawGameOverScreen(g2);
+        }
+        
         g2.dispose();
     }
 }

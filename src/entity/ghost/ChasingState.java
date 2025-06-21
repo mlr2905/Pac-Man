@@ -7,13 +7,13 @@ public class ChasingState implements GhostState {
         boolean onGrid = (ghost.x % ghost.gp.tileSize == 0) && (ghost.y % ghost.gp.tileSize == 0);
         boolean isStuck = !ghost.canMoveInDirection(ghost.getCurrentMovingDirection(), Ghost.MovementRule.CHASE);
 
-        int playerTileCol = ghost.gp.player.x / ghost.gp.tileSize;
-        int playerTileRow = ghost.gp.player.y / ghost.gp.tileSize;
-        boolean playerMoved = (playerTileCol != ghost.lastPlayerTileX || playerTileRow != ghost.lastPlayerTileY);
+        int pacManTileCol = ghost.gp.pacMan.x / ghost.gp.tileSize;
+        int pacManTileRow = ghost.gp.pacMan.y / ghost.gp.tileSize;
+        boolean pacManMoved = (pacManTileCol != ghost.lastpacManTileX || pacManTileRow != ghost.lastpacManTileY);
 
-        if (onGrid || isStuck || playerMoved) {
-            ghost.lastPlayerTileX = playerTileCol;
-            ghost.lastPlayerTileY = playerTileRow;
+        if (onGrid || isStuck || pacManMoved) {
+            ghost.lastpacManTileX = pacManTileCol;
+            ghost.lastpacManTileY = pacManTileRow;
 
             int[] target = ghost.targetingStrategy.getTargetTile(ghost);
 

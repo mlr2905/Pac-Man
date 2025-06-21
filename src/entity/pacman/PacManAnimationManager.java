@@ -1,11 +1,14 @@
-package entity.player;
+package entity.pacman;
+
+
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-public class PlayerAnimationManager {
 
-    private Player player;
+public class PacManAnimationManager {
+
+    private PacMan pacMan;
 
     private BufferedImage[][] frames;
     private int frameIndex = 0;
@@ -13,18 +16,18 @@ public class PlayerAnimationManager {
     private final int frameDelay = 8;
     private final int framesPerDir = 3;
 
-    public PlayerAnimationManager(Player player) {
-        this.player = player;
-        loadPlayerImages();
+    public PacManAnimationManager(PacMan pacMan) {
+        this.pacMan = pacMan;
+        loadpacManImages();
     }
 
-    public void loadPlayerImages() {
+    public void loadpacManImages() {
         try {
-            BufferedImage down1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/pacmanDown.png"));
-            BufferedImage down2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/pacmanClosed.png"));
-            BufferedImage right1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/pacmanRight.png"));
-            BufferedImage left1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/pacmanLeft.png"));
-            BufferedImage up1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/pacmanUp.png"));
+            BufferedImage down1 = ImageIO.read(getClass().getResourceAsStream("/resources/pacMan/pacmanDown.png"));
+            BufferedImage down2 = ImageIO.read(getClass().getResourceAsStream("/resources/pacMan/pacmanClosed.png"));
+            BufferedImage right1 = ImageIO.read(getClass().getResourceAsStream("/resources/pacMan/pacmanRight.png"));
+            BufferedImage left1 = ImageIO.read(getClass().getResourceAsStream("/resources/pacMan/pacmanLeft.png"));
+            BufferedImage up1 = ImageIO.read(getClass().getResourceAsStream("/resources/pacMan/pacmanUp.png"));
 
             frames = new BufferedImage[4][3];
             frames[0][0] = down1;
@@ -40,10 +43,10 @@ public class PlayerAnimationManager {
             frames[3][1] = down2;
             frames[3][2] = up1;
 
-            System.out.println("Player images loaded successfully!");
+            System.out.println("pacMan images loaded successfully!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Error loading player images: " + e.getMessage());
+            System.out.println("Error loading pacMan images: " + e.getMessage());
         }
     }
 
@@ -61,8 +64,8 @@ public class PlayerAnimationManager {
     }
 
     public BufferedImage getFrame() {
-        if (frames != null && player.direction >= 0 && player.direction < frames.length) {
-            return frames[player.direction][frameIndex];
+        if (frames != null && pacMan.direction >= 0 && pacMan.direction < frames.length) {
+            return frames[pacMan.direction][frameIndex];
         }
         return null;
     }

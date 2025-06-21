@@ -14,6 +14,10 @@ public class ScoreManager {
         this.score = 0;
     }
 
+    public void reset(){
+    this.score = 0;
+
+    }
     public void addScore(int points) {
         this.score += points;
         System.out.println("Current Score: " + score);

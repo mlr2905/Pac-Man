@@ -1,11 +1,11 @@
-package entity.player;
+package entity.pacman;
 
 import main.GamePanel;
 import main.KeyHandler;
 
-public class PlayerMovementHandler {
+public class PacManMovementHandler {
 
-    private Player player;
+    private PacMan pacMan;
     private GamePanel gp;
 
     private KeyHandler keyH;
@@ -17,8 +17,8 @@ public class PlayerMovementHandler {
     private int teleportCooldownCounter = 0;
     private final int TELEPORT_COOLDOWN_FRAMES = 10;
 
-    public PlayerMovementHandler(Player player, GamePanel gp, KeyHandler keyH) {
-        this.player = player;
+    public PacManMovementHandler(PacMan pacMan, GamePanel gp, KeyHandler keyH) {
+        this.pacMan = pacMan;
         this.gp = gp;
         this.keyH = keyH;
     }
@@ -61,20 +61,20 @@ public class PlayerMovementHandler {
     }
 
     private boolean canMoveInDirection(String dir) {
-        int newX = player.x, newY = player.y;
+        int newX = pacMan.x, newY = pacMan.y;
 
         switch (dir) {
             case "up":
-                newY -= player.speed;
+                newY -= pacMan.speed;
                 break;
             case "down":
-                newY += player.speed;
+                newY += pacMan.speed;
                 break;
             case "left":
-                newX -= player.speed;
+                newX -= pacMan.speed;
                 break;
             case "right":
-                newX += player.speed;
+                newX += pacMan.speed;
                 break;
             default:
                 return false;
@@ -88,30 +88,30 @@ public class PlayerMovementHandler {
             return false;
         }
 
-        int newX = player.x, newY = player.y;
+        int newX = pacMan.x, newY = pacMan.y;
 
         switch (currentMovingDirection) {
             case "up":
-                newY -= player.speed;
-                player.direction = 3;
+                newY -= pacMan.speed;
+                pacMan.direction = 3;
                 break;
             case "down":
-                newY += player.speed;
-                player.direction = 0;
+                newY += pacMan.speed;
+                pacMan.direction = 0;
                 break;
             case "left":
-                newX -= player.speed;
-                player.direction = 2;
+                newX -= pacMan.speed;
+                pacMan.direction = 2;
                 break;
             case "right":
-                newX += player.speed;
-                player.direction = 1;
+                newX += pacMan.speed;
+                pacMan.direction = 1;
                 break;
         }
 
         if (!checkCollision(newX, newY)) {
-            player.x = newX;
-            player.y = newY;
+            pacMan.x = newX;
+            pacMan.y = newY;
             return true;
         } else {
             currentMovingDirection = "none";
@@ -120,13 +120,13 @@ public class PlayerMovementHandler {
     }
 
     private boolean checkCollision(int newX, int newY) {
-        int playerSize = gp.tileSize;
+        int pacManSize = gp.tileSize;
         int margin = 2;
 
         int leftBound = newX + margin;
-        int rightBound = newX + playerSize - margin;
+        int rightBound = newX + pacManSize - margin;
         int topBound = newY + margin;
-        int bottomBound = newY + playerSize - margin;
+        int bottomBound = newY + pacManSize - margin;
 
         int leftTile = leftBound / gp.tileSize;
         int rightTile = rightBound / gp.tileSize;
@@ -155,20 +155,20 @@ public class PlayerMovementHandler {
             return;
         }
 
-        int playerCol = (player.x + gp.tileSize / 2) / gp.tileSize;
-        int playerRow = (player.y + gp.tileSize / 2) / gp.tileSize;
+        int pacManCol = (pacMan.x + gp.tileSize / 2) / gp.tileSize;
+        int pacManRow = (pacMan.y + gp.tileSize / 2) / gp.tileSize;
 
-        if (playerCol < 0 || playerCol >= gp.tileM.map[0].length || playerRow < 0 || playerRow >= gp.tileM.map.length) {
+        if (pacManCol < 0 || pacManCol >= gp.tileM.map[0].length || pacManRow < 0 || pacManRow >= gp.tileM.map.length) {
             return;
         }
 
-        if (gp.tileM.map[playerRow][playerCol] == 3) {
-            if (playerCol == gp.teleport1[0] && playerRow == gp.teleport1[1]) {
-                player.x = gp.teleport2[0] * gp.tileSize;
-                player.y = gp.teleport2[1] * gp.tileSize;
-            } else if (playerCol == gp.teleport2[0] && playerRow == gp.teleport2[1]) {
-                player.x = gp.teleport1[0] * gp.tileSize;
-                player.y = gp.teleport1[1] * gp.tileSize;
+        if (gp.tileM.map[pacManRow][pacManCol] == 3) {
+            if (pacManCol == gp.teleport1[0] && pacManRow == gp.teleport1[1]) {
+                pacMan.x = gp.teleport2[0] * gp.tileSize;
+                pacMan.y = gp.teleport2[1] * gp.tileSize;
+            } else if (pacManCol == gp.teleport2[0] && pacManRow == gp.teleport2[1]) {
+                pacMan.x = gp.teleport1[0] * gp.tileSize;
+                pacMan.y = gp.teleport1[1] * gp.tileSize;
             }
             isTeleporting = true;
             teleportCooldownCounter = TELEPORT_COOLDOWN_FRAMES;
