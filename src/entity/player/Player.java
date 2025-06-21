@@ -36,8 +36,10 @@ public class Player extends Entity {
     }
 
     public void setDefaultValues() {
-        x = 30;
-        y = 32;
+    x = (gp.screenWidth / 2) -18- (gp.tileSize / 2);
+
+    // חישוב נקודת האמצע האנכית של המסך, והתאמה לגודל השחקן
+    y = (gp.screenHeight / 2) +30- (gp.tileSize / 2);
         speed = 3;
    
     }

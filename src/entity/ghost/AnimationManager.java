@@ -9,16 +9,11 @@ public class AnimationManager {
     private int frameIndex = 0;
     private int frameTick = 0;
     private final int frameDelay;
-    // ודא שהמשתנה הזה קיים
     private final String ghostName;
 
-    /**
-     * הבנאי חייב לקבל גם את שם הרוח.
-     * @param ghostName  שם ספריית התמונות של הרוח (לדוגמה, "blinky" או "clyde").
-     * @param frameDelay מספר ה"תיקתוקים" להמתנה בין פריימים.
-     */
+
     public AnimationManager(String ghostName, int frameDelay) {
-        this.ghostName = ghostName; // ודא שהשורה הזו קיימת
+        this.ghostName = ghostName; 
         this.frameDelay = frameDelay;
         loadFrames();
     }
@@ -28,12 +23,9 @@ public class AnimationManager {
             frames = new BufferedImage[4][3];
             String[] directions = {"down", "right", "left", "up"};
             
-            // --- זו השורה הקריטית ביותר ---
-            // ודא שהנתיב נבנה עם המשתנה ghostName ולא עם שם קבוע
-            String basePath = "/resources/ghosts/" + this.ghostName + "/";
+          String basePath = "/resources/ghosts/" + this.ghostName + "/";
 
             for (int i = 0; i < directions.length; i++) {
-                // ודא שגם שמות הקבצים משתמשים ב-ghostName
                 BufferedImage frame1 = ImageIO.read(getClass().getResourceAsStream(basePath + this.ghostName + "3" + directions[i] + ".png"));
                 BufferedImage frame2 = ImageIO.read(getClass().getResourceAsStream(basePath + this.ghostName + "4" + directions[i] + ".png"));
                 frames[i][0] = frame1;
@@ -41,13 +33,11 @@ public class AnimationManager {
                 frames[i][2] = frame1;
             }
         } catch (Exception e) {
-            // הוספת הדפסת שגיאה מפורטת שתעזור לנו
             System.err.println("!!! ERROR: Failed to load animation frames for ghost: " + this.ghostName);
             e.printStackTrace();
         }
     }
 
-    // שאר הקובץ (update, getCurrentFrame) נשאר ללא שינוי
     public void update(boolean isMoving) {
         if (isMoving) {
             frameTick++;

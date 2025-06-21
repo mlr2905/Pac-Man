@@ -7,7 +7,7 @@ public class PlayerMovementHandler {
 
     private Player player;
     private GamePanel gp;
-    
+
     private KeyHandler keyH;
 
     // State related to movement
@@ -23,8 +23,8 @@ public class PlayerMovementHandler {
         this.keyH = keyH;
     }
 
-  
     public boolean update() {
+
         if (isTeleporting) {
             teleportCooldownCounter--;
             if (teleportCooldownCounter <= 0) {
@@ -37,36 +37,49 @@ public class PlayerMovementHandler {
             requestedDirection = inputDirection;
         }
 
-        if (!requestedDirection.equals("none") && canMoveInDirection(requestedDirection)) {
-            currentMovingDirection = requestedDirection;
-            requestedDirection = "none";
+        if (!requestedDirection.equals("none") && canMoveInDirection(requestedDirection)) { //
+            currentMovingDirection = requestedDirection; //
+            requestedDirection = "none"; //
         }
 
+        // --- ביצוע הפעולות ---
         boolean moved = executeMovement();
         checkTeleport();
-        
         return moved;
     }
 
     private String getInputDirection() {
-        if (keyH.upPressed) return "up";
-        if (keyH.downPressed) return "down";
-        if (keyH.leftPressed) return "left";
-        if (keyH.rightPressed) return "right";
+        if (keyH.upPressed)
+            return "up";
+        if (keyH.downPressed)
+            return "down";
+        if (keyH.leftPressed)
+            return "left";
+        if (keyH.rightPressed)
+            return "right";
         return "none";
     }
 
     private boolean canMoveInDirection(String dir) {
         int newX = player.x, newY = player.y;
-        
+
         switch (dir) {
-            case "up": newY -= player.speed; break;
-            case "down": newY += player.speed; break;
-            case "left": newX -= player.speed; break;
-            case "right": newX += player.speed; break;
-            default: return false;
+            case "up":
+                newY -= player.speed;
+                break;
+            case "down":
+                newY += player.speed;
+                break;
+            case "left":
+                newX -= player.speed;
+                break;
+            case "right":
+                newX += player.speed;
+                break;
+            default:
+                return false;
         }
-        
+
         return !checkCollision(newX, newY);
     }
 
@@ -76,7 +89,7 @@ public class PlayerMovementHandler {
         }
 
         int newX = player.x, newY = player.y;
-        
+
         switch (currentMovingDirection) {
             case "up":
                 newY -= player.speed;
@@ -105,21 +118,21 @@ public class PlayerMovementHandler {
             return false;
         }
     }
-    
+
     private boolean checkCollision(int newX, int newY) {
         int playerSize = gp.tileSize;
         int margin = 2;
-        
+
         int leftBound = newX + margin;
         int rightBound = newX + playerSize - margin;
         int topBound = newY + margin;
         int bottomBound = newY + playerSize - margin;
-        
+
         int leftTile = leftBound / gp.tileSize;
         int rightTile = rightBound / gp.tileSize;
         int topTile = topBound / gp.tileSize;
         int bottomTile = bottomBound / gp.tileSize;
-        
+
         for (int row = topTile; row <= bottomTile; row++) {
             for (int col = leftTile; col <= rightTile; col++) {
                 if (isWall(col, row)) {

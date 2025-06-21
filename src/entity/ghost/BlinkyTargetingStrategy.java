@@ -1,6 +1,5 @@
 package entity.ghost;
 
-// אסטרטגיית המרדף הפשוטה של בלינקי: תמיד רודף אחרי השחקן.
 public class BlinkyTargetingStrategy implements TargetingStrategy {
     @Override
     public int[] getTargetTile(Ghost ghost) {
