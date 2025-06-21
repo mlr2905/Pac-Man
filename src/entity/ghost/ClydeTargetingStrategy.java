@@ -17,12 +17,9 @@ public class ClydeTargetingStrategy implements TargetingStrategy {
         double distance = Math.sqrt(Math.pow(ghostCol - pacManCol, 2) + Math.pow(ghostRow - pacManRow, 2));
 
         if (distance > chaseRadius) {
-            // If Pac-Man is far away, chase him directly
             return new int[]{pacManCol, pacManRow};
         } else {
-            // If Pac-Man is close, wander away to his scatter target (e.g., a corner)
-            // We can return a special value to signal random movement in the ChasingState.
-            return new int[]{-1, -1};
+              return new int[]{-1, -1};
         }
     }
 } 

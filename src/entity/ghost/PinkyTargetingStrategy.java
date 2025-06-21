@@ -16,26 +16,23 @@ public class PinkyTargetingStrategy implements TargetingStrategy {
         int targetCol = pacMan.x / ghost.gp.tileSize;
         int targetRow = pacMan.y / ghost.gp.tileSize;
 
-        // --- קוד מתוקן ---
-        // המשתנה pacMan.direction הוא int, לכן נשתמש במספרים ב-switch.
-        // אנו מניחים את המיפוי הבא, בהתבסס על הקוד של Ghost.java:
-        // 0 = down, 1 = right, 2 = left, 3 = up
-        // אם המיפוי במחלקת PacMan שלך שונה, שנה את המספרים ב-case בהתאם.
         switch (pacMan.direction) {
-            case 3: // "up"
-                targetRow -= ambushDistance;
-                break;
-            case 0: // "down"
+
+            case 0:
                 targetRow += ambushDistance;
                 break;
-            case 2: // "left"
+
+            case 1:
+                targetCol += ambushDistance;
+                break;
+            case 2:
                 targetCol -= ambushDistance;
                 break;
-            case 1: // "right"
-                targetCol += ambushDistance;
+            case 3: 
+                targetRow -= ambushDistance;
                 break;
         }
 
-        return new int[]{targetCol, targetRow};
+        return new int[] { targetCol, targetRow };
     }
 }
