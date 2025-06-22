@@ -13,10 +13,9 @@ public class LevelManager {
     public int currentLevel = 1;
     private final int maxLevel = 3;
 
-    // Game States
     public final int playState = 1;
     public final int transitionState = 2;
-    public final int gameOverState = 3; // --- חדש: הוספת מצב סיום משחק ---
+    public final int gameOverState = 3;
     public int gameState;
 
     public LevelManager(GamePanel gp) {
@@ -56,7 +55,6 @@ public class LevelManager {
             System.out.println("All items collected! Advancing to level " + currentLevel);
         } else {
             System.out.println("All levels completed! Game Over.");
-            // --- שינוי: מעבר למצב סיום משחק במקום עצירת התהליך ---
             gameState = gameOverState;
         }
     }

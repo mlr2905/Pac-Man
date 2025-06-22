@@ -2,14 +2,13 @@ package entity.pacman;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import collectibles.Collectable;
-import entity.Entity;
-import input.KeyHandler;
-
+import java.awt.Rectangle;
 import java.awt.Color;
 
+import entity.Entity;
+import input.KeyHandler;
 import main.GamePanel;
-import java.awt.Rectangle;
+import collectibles.Collectable;
 
 public class PacMan extends Entity {
 

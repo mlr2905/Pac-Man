@@ -34,12 +34,11 @@ public class PacManMovementHandler {
             requestedDirection = inputDirection;
         }
 
-        if (!requestedDirection.equals("none") && canMoveInDirection(requestedDirection)) { //
-            currentMovingDirection = requestedDirection; //
-            requestedDirection = "none"; //
+        if (!requestedDirection.equals("none") && canMoveInDirection(requestedDirection)) { 
+            currentMovingDirection = requestedDirection; 
+            requestedDirection = "none"; 
         }
 
-        // --- ביצוע הפעולות ---
         boolean moved = executeMovement();
         checkTeleport();
         return moved;

@@ -41,17 +41,6 @@ public class Ghost extends Entity {
         IN_HOUSE, THROUGH_HOUSE_DOOR, CHASE
     }
 
-    /**
-     * בנאי גנרי לרוח רפאים.
-     * 
-     * @param gp                ה-GamePanel הראשי.
-     * @param name              שם הרוח (לצורך טעינת אנימציות, למשל "blinky",
-     *                          "clyde").
-     * @param startX            קואורדינטת X התחלתית.
-     * @param startY            קואורדינטת Y התחלתית.
-     * @param exitScoreTrigger  הניקוד שנדרש כדי שהרוח תצא מהבית.
-     * @param targetingStrategy אובייקט המגדיר כיצד הרוח בוחרת את מטרתה.
-     */
     public Ghost(GamePanel gp, String name, int startX, int startY, int exitScoreTrigger,
             TargetingStrategy targetingStrategy) {
         this.gp = gp;
@@ -64,8 +53,6 @@ public class Ghost extends Entity {
         setDefaultValues(startX, startY);
     }
 
-    // בקובץ Ghost.java
-
     public void setDefaultValues(int startX, int startY) {
         this.x = startX;
         this.y = startY;
@@ -74,11 +61,9 @@ public class Ghost extends Entity {
         requestedDirection = "none";
         gameStartedForGhost = false;
 
-        // --- הוסף את השורה הבאה ---
-        // מאפס את הדגל כדי שהרוח תוכל לבקש לצאת שוב אחרי פסילה
         this.hasRequestedExit = false;
 
-        setState(new WaitingState()); // כל הרוחות מתחילות (או חוזרות) למצב המתנה
+        setState(new WaitingState()); 
     }
 
     public void setState(GhostState newState) {

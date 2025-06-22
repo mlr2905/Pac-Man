@@ -23,7 +23,6 @@ public class ObjectPlacer {
         try {
             pelletImage = ImageIO.read(getClass().getResourceAsStream("/resources/objects/pellet.png"));
             powerPelletImage = ImageIO.read(getClass().getResourceAsStream("/resources/objects/power_pellet.png"));
-            // ודא שהתמונות האלה קיימות בתיקיית resources/objects
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error loading object images!");

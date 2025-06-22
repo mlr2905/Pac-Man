@@ -22,7 +22,7 @@ public class CollisionManager {
             
             if (pacManBounds.intersects(ghostBounds)) {
                 pacManHit();
-                break; // Exit after one hit to prevent multiple life deductions in one frame
+                break;
             }
         }
     }

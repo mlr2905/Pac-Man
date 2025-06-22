@@ -36,7 +36,7 @@ public class GhostNavigator {
                 }
             }
         }
-        return "none"; // לא נמצא נתיב
+        return "none"; 
     }
 
     private static boolean isValidTile(int col, int row) {

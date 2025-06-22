@@ -156,7 +156,6 @@ public class GamePanel extends JPanel implements Runnable {
         if (lives <= 0) {
             levelManager.gameState = levelManager.gameOverState;
         } else {
-            // pacMan.resetPosition(); <-- נשתמש ב-setDefaultValues כדי לאפס הכל
             pacMan.setDefaultValues();
 
             int startTileX = 18;
@@ -168,25 +167,18 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // --- חדש: מתודה לאתחול המשחק מחדש ---
     public void restartGame() {
-        // 1. אפס חיים
         this.lives = 3;
 
-        // 2. אפס ניקוד (ודא שיש לך מתודת reset ב-ScoreManager)
         this.scoreM.reset();
 
-        // 3. אפס את מיקום פקמן
         this.pacMan.setDefaultValues();
 
-        // 4. אתחל את הרוחות מחדש למצבן ההתחלתי
         initializeGhosts();
 
-        // 5. נקה את תור היציאה של הרוחות
         exitQueue.clear();
         isExitingLaneBusy = false;
 
-        // 6. חזור למצב משחק רגיל
         levelManager.gameState = levelManager.playState;
     }
 
@@ -220,7 +212,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        // --- שינוי: מעדכנים את הדמויות רק אם המשחק במצב "playState" ---
         if (levelManager.gameState == levelManager.playState) {
             pacMan.update();
             for (Collectable item : collectables) {
@@ -235,7 +226,6 @@ public class GamePanel extends JPanel implements Runnable {
             checkCollision();
         }
 
-        // מעדכנים את מנהל השלבים תמיד, כדי שיוכל לטפל גם במצבים אחרים
         levelManager.update();
     }
 
@@ -247,7 +237,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // --- חדש: מתודות לציור מסך סיום המשחק ---
     private void drawGameOverScreen(Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, screenWidth, screenHeight);
@@ -277,7 +266,6 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        // --- שינוי: הוספת לוגיקה לציור לפי מצב המשחק ---
         if (levelManager.gameState != levelManager.transitionState) {
             tileM.draw(g2);
             for (Collectable item : collectables) {
