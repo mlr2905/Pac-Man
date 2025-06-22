@@ -10,7 +10,6 @@ public class PacManMovementHandler {
 
     private KeyHandler keyH;
 
-    // State related to movement
     private String currentMovingDirection = "none";
     private String requestedDirection = "none";
     private boolean isTeleporting = false;

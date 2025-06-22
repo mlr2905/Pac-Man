@@ -7,12 +7,7 @@ import collectibles.PowerPellet;
 
 public class MapLoader {
 
-    /**
-     * טוען את מבנה המפה מ-MapData ומאכלס את רשימת המתכלים ב-GamePanel.
-     * @param gp ה-GamePanel הראשי של המשחק.
-     * @param tileSet ערכת האריחים והתמונות שכבר נטענה.
-     * @return מערך דו-מימדי (int[][]) המייצג את מפת האריחים.
-     */
+   
     public static int[][] loadLayoutAndEntities(GamePanel gp, TileSet tileSet) {
         int[][] sourceMapData = MapData.INITIAL_MAP_DATA;
         int numRows = sourceMapData.length;

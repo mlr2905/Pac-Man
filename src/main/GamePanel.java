@@ -62,6 +62,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;
+public EntityManager entityManager;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -75,7 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
         levelManager = new LevelManager(this);
         lives = 3;
         pacMan = new PacMan(this, keyH);
-        
+
         initializeGhosts(); 
         findTeleportTiles();
         
