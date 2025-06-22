@@ -1,12 +1,11 @@
-package main;
-
-import map.MapData;
+package map;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import collectibles.Pellet;
 import collectibles.PowerPellet;
+import main.GamePanel;
 
 public class ObjectPlacer {
 

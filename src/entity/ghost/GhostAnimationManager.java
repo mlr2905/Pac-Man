@@ -3,7 +3,7 @@ package entity.ghost;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-public class AnimationManager {
+public class GhostAnimationManager {
 
     private BufferedImage[][] frames;
     private int frameIndex = 0;
@@ -12,7 +12,7 @@ public class AnimationManager {
     private final String ghostName;
 
 
-    public AnimationManager(String ghostName, int frameDelay) {
+    public GhostAnimationManager(String ghostName, int frameDelay) {
         this.ghostName = ghostName; 
         this.frameDelay = frameDelay;
         loadFrames();

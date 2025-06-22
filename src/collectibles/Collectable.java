@@ -3,7 +3,7 @@ package collectibles;
 
 import java.awt.Rectangle;
 
-import main.ScoreManager;
+import managers.ScoreManager;
 
 public interface Collectable {
     boolean isCollected();

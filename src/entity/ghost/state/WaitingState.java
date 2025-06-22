@@ -1,4 +1,7 @@
-package entity.ghost;
+package entity.ghost.state;
+
+import entity.ghost.Ghost;
+import entity.ghost.Ghost.MovementRule;
 
 public class WaitingState implements GhostState {
 

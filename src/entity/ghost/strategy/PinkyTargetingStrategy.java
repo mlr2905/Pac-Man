@@ -1,5 +1,6 @@
-package entity.ghost;
+package entity.ghost.strategy;
 
+import entity.ghost.Ghost;
 import entity.pacman.PacMan;
 
 public class PinkyTargetingStrategy implements TargetingStrategy {

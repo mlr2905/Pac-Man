@@ -1,9 +1,11 @@
-package main;
+package managers;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import entity.ghost.ExitingHouseState;
+
 import entity.ghost.Ghost;
+import entity.ghost.state.ExitingHouseState;
+import main.GamePanel;
 
 public class GhostExitManager {
     

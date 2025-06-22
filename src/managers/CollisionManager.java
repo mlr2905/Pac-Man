@@ -1,7 +1,8 @@
-package main;
+package managers;
 
 import java.awt.Rectangle;
 import entity.ghost.Ghost;
+import main.GamePanel;
 
 public class CollisionManager {
     

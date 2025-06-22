@@ -1,4 +1,7 @@
-package entity.ghost;
+package entity.ghost.state;
+
+import entity.ghost.Ghost;
+import entity.ghost.Ghost.MovementRule;
 
 public class ExitingHouseState implements GhostState {
     private int stage = 0; // 0: move to return spot, 1: move to exit door, 2: move outside

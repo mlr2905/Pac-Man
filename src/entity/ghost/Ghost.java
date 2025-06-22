@@ -1,6 +1,5 @@
 package entity.ghost;
 
-import main.Entity;
 import main.GamePanel;
 import map.MapData;
 import java.awt.*;
@@ -8,12 +7,17 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
+import entity.Entity;
+import entity.ghost.state.GhostState;
+import entity.ghost.state.WaitingState;
+import entity.ghost.strategy.TargetingStrategy;
+
 public class Ghost extends Entity {
 
     public GamePanel gp;
     public Rectangle solidArea;
     private GhostState currentState;
-    private AnimationManager animationManager;
+    private GhostAnimationManager animationManager;
     private Random random = new Random();
 
     // --- מאפיינים ייחודיים לכל רוח ---
@@ -50,7 +54,7 @@ public class Ghost extends Entity {
      */
     public Ghost(GamePanel gp, String name, int startX, int startY, int exitScoreTrigger, TargetingStrategy targetingStrategy) {
         this.gp = gp;
-        this.animationManager = new AnimationManager(name, 8);
+        this.animationManager = new GhostAnimationManager(name, 8);
         this.solidArea = new Rectangle(6, 6, gp.tileSize - 10, gp.tileSize - 10);
         
         this.exitScoreTrigger = exitScoreTrigger;
@@ -108,7 +112,7 @@ public void setDefaultValues(int startX, int startY) {
             g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
         }
     }
-    public AnimationManager getAnimationManager() {
+    public GhostAnimationManager getAnimationManager() {
     return this.animationManager;
 }
 

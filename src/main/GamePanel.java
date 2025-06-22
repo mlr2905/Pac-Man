@@ -15,14 +15,18 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import collectibles.Collectable;
-import entity.ghost.BlinkyTargetingStrategy;
-import entity.ghost.ClydeTargetingStrategy;
-import entity.ghost.ExitingHouseState;
 import entity.ghost.Ghost;
-import entity.ghost.InkyTargetingStrategy;
-import entity.ghost.PinkyTargetingStrategy;
-import entity.ghost.TargetingStrategy;
+import entity.ghost.state.ExitingHouseState;
+import entity.ghost.strategy.BlinkyTargetingStrategy;
+import entity.ghost.strategy.ClydeTargetingStrategy;
+import entity.ghost.strategy.InkyTargetingStrategy;
+import entity.ghost.strategy.PinkyTargetingStrategy;
+import entity.ghost.strategy.TargetingStrategy;
 import entity.pacman.PacMan;
+import input.KeyHandler;
+import managers.EntityManager;
+import managers.LevelManager;
+import managers.ScoreManager;
 import map.MapData;
 import tile.TileManager;
 
@@ -32,15 +36,15 @@ public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 16;
     final int scale = 2;
     public final int tileSize = originalTileSize * scale;
-    final int maxScreenCol = 38;
-    final int maxScreenRow = 19;
+    public final int maxScreenCol = 38;
+    public final int maxScreenRow = 19;
     public final int screenWidth = tileSize * maxScreenCol;
     public final int screenHeight = tileSize * maxScreenRow;
 
     // GAME SYSTEM
     int FPS = 60;
     Thread gameThread;
-    KeyHandler keyH = new KeyHandler();
+    public KeyHandler keyH = new KeyHandler();
     
     // MANAGERS & HANDLERS
     public TileManager tileM;
@@ -58,7 +62,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int[] teleport1 = null;
     public int[] teleport2 = null;
     
-    BufferedImage lifeImage;
+    public BufferedImage lifeImage;
 
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;

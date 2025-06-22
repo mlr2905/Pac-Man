@@ -1,7 +1,7 @@
 package entity.pacman;
 
+import input.KeyHandler;
 import main.GamePanel;
-import main.KeyHandler;
 
 public class PacManMovementHandler {
 

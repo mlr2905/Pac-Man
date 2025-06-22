@@ -1,8 +1,10 @@
-package main;
+package managers;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+
+import main.GamePanel;
 
 public class UIManager {
     

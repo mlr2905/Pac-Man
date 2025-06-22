@@ -1,6 +1,8 @@
-package main;
+package managers;
 
 import collectibles.Collectable;
+import main.GamePanel;
+
 import java.awt.Graphics2D; //  <-- הוסף ייבוא
 import java.awt.Color;    //  <-- הוסף ייבוא
 import java.awt.Font;     //  <-- הוסף ייבוא
