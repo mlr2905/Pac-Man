@@ -29,16 +29,13 @@ public class ScoreManager {
         return score;
     }
 
-    // The draw method now receives the current level as an argument
     public void draw(Graphics2D g2, int currentLevel) {
         g2.setFont(new Font("Arial", Font.BOLD, 24));
         g2.setColor(Color.WHITE);
 
-        // Draw the score
         String scoreText = "Score: " + score;
         g2.drawString(scoreText, 10, gp.tileSize);
 
-        // Draw the level number passed as a parameter
         String levelText = "Level: " + currentLevel;
         int x = gp.screenWidth - g2.getFontMetrics().stringWidth(levelText) - 10;
         int y = gp.tileSize;

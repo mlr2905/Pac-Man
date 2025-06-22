@@ -10,19 +10,16 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // Not used
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
-
+        
         if (code == KeyEvent.VK_UP) upPressed = true;
         if (code == KeyEvent.VK_DOWN) downPressed = true;
         if (code == KeyEvent.VK_LEFT) leftPressed = true;
         if (code == KeyEvent.VK_RIGHT) rightPressed = true;
-
-        // --- הוסף את השורה הבאה ---
         if (code == KeyEvent.VK_ENTER) enterPressed = true;
     }
 
@@ -34,7 +31,6 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_DOWN) downPressed = false;
         if (code == KeyEvent.VK_LEFT) leftPressed = false;
         if (code == KeyEvent.VK_RIGHT) rightPressed = false;
-        
         if (code == KeyEvent.VK_ENTER) enterPressed = false;
     }
 }

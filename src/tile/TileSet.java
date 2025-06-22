@@ -11,7 +11,6 @@ public class TileSet {
     private final Tile[] tiles;
     private final BufferedImage pelletImage;
     private final BufferedImage powerPelletImage;
-
     private final Tile defaultTile;
 
     public TileSet() {

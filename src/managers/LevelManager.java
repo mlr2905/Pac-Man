@@ -1,11 +1,11 @@
 package managers;
 
+import java.awt.Graphics2D; 
+import java.awt.Color;    
+import java.awt.Font;
+
 import collectibles.Collectable;
 import main.GamePanel;
-
-import java.awt.Graphics2D; //  <-- הוסף ייבוא
-import java.awt.Color;    //  <-- הוסף ייבוא
-import java.awt.Font;     //  <-- הוסף ייבוא
 
 public class LevelManager {
 
@@ -21,7 +21,7 @@ public class LevelManager {
 
     public LevelManager(GamePanel gp) {
         this.gp = gp;
-        this.gameState = playState; // Start the game in play state
+        this.gameState = playState; 
     }
 
     public int getCurrentLevel() {
@@ -35,11 +35,10 @@ public class LevelManager {
             loadNextLevel();
             gameState = playState;
         } else if (gameState == gameOverState) {
-            // --- חדש: לוגיקה למצב סיום משחק ---
-            // בדוק אם השחקן לחץ על Enter כדי להתחיל מחדש
+        
             if (gp.keyH.enterPressed) {
                 gp.restartGame();
-                gp.keyH.enterPressed = false; // אפס את הדגל למניעת ריסטרט כפול
+                gp.keyH.enterPressed = false; 
             }
         }
     }

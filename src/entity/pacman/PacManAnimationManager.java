@@ -1,15 +1,11 @@
 package entity.pacman;
 
-
-
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-
 
 public class PacManAnimationManager {
 
     private PacMan pacMan;
-
     private BufferedImage[][] frames;
     private int frameIndex = 0;
     private int frameTick = 0;

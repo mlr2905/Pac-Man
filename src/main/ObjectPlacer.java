@@ -1,11 +1,12 @@
-package map;
+package main;
+
+import map.MapData;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import collectibles.Pellet;
 import collectibles.PowerPellet;
-import main.GamePanel;
 
 public class ObjectPlacer {
 
@@ -30,10 +31,9 @@ public class ObjectPlacer {
     }
 
     public void placeObjects() {
-        // Clear existing collectables before placing new ones for a new level
         gp.collectables.clear();
 
-        int[][] map = MapData.INITIAL_MAP_DATA; // In a real game, you might load different maps per level
+        int[][] map = MapData.INITIAL_MAP_DATA;
 
         for (int row = 0; row < gp.maxScreenRow; row++) {
             for (int col = 0; col < gp.maxScreenCol; col++) {
@@ -41,11 +41,9 @@ public class ObjectPlacer {
                 int worldX = col * gp.tileSize;
                 int worldY = row * gp.tileSize;
 
-                // Tile '0' is a regular pellet
                 if (tileNum == 0) {
                     gp.collectables.add(new Pellet(gp, worldX, worldY, pelletImage));
                 }
-                // Tile '7' is a power pellet
                 else if (tileNum == 7) {
                     gp.collectables.add(new PowerPellet(gp, worldX, worldY, powerPelletImage));
                 }

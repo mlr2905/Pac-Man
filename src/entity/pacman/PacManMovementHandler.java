@@ -7,9 +7,7 @@ public class PacManMovementHandler {
 
     private PacMan pacMan;
     private GamePanel gp;
-
     private KeyHandler keyH;
-
     private String currentMovingDirection = "none";
     private String requestedDirection = "none";
     private boolean isTeleporting = false;

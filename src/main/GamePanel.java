@@ -2,7 +2,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font; // <-- ייבוא חדש
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -32,7 +32,6 @@ import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    // SCREEN SETTINGS
     final int originalTileSize = 16;
     final int scale = 2;
     public final int tileSize = originalTileSize * scale;
@@ -41,32 +40,29 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol;
     public final int screenHeight = tileSize * maxScreenRow;
 
-    // GAME SYSTEM
     int FPS = 60;
     Thread gameThread;
     public KeyHandler keyH = new KeyHandler();
-    
-    // MANAGERS & HANDLERS
+
     public TileManager tileM;
     public ScoreManager scoreM;
     public LevelManager levelManager;
     public int lives;
 
-    // ENTITIES & OBJECTS
     public PacMan pacMan;
-    public Ghost blinky; 
+    public Ghost blinky;
     public Ghost pinky;
     public Ghost inky;
     public Ghost clyde;
     public ArrayList<Collectable> collectables = new ArrayList<>();
     public int[] teleport1 = null;
     public int[] teleport2 = null;
-    
+
     public BufferedImage lifeImage;
 
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;
-public EntityManager entityManager;
+    public EntityManager entityManager;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -81,9 +77,9 @@ public EntityManager entityManager;
         lives = 3;
         pacMan = new PacMan(this, keyH);
 
-        initializeGhosts(); 
+        initializeGhosts();
         findTeleportTiles();
-        
+
         try {
             lifeImage = ImageIO.read(getClass().getResourceAsStream("/resources/PacMan/pacmanRight.png"));
         } catch (IOException e) {
@@ -111,13 +107,15 @@ public EntityManager entityManager;
         for (int row = 0; row < MapData.INITIAL_MAP_DATA.length; row++) {
             for (int col = 0; col < MapData.INITIAL_MAP_DATA[0].length; col++) {
                 if (MapData.INITIAL_MAP_DATA[row][col] == 3) {
-                    if (teleport1 == null) teleport1 = new int[]{col, row};
-                    else if (teleport2 == null) teleport2 = new int[]{col, row};
+                    if (teleport1 == null)
+                        teleport1 = new int[] { col, row };
+                    else if (teleport2 == null)
+                        teleport2 = new int[] { col, row };
                 }
             }
         }
     }
-    
+
     public void requestToExit(Ghost ghost) {
         if (!exitQueue.contains(ghost)) {
             exitQueue.add(ghost);
@@ -127,7 +125,7 @@ public EntityManager entityManager;
     public void setExitingLaneBusy(boolean busy) {
         this.isExitingLaneBusy = busy;
     }
-    
+
     private void manageGhostExits() {
         if (!isExitingLaneBusy && !exitQueue.isEmpty()) {
             Ghost ghostToExit = exitQueue.poll();
@@ -135,15 +133,16 @@ public EntityManager entityManager;
             ghostToExit.setState(new ExitingHouseState());
         }
     }
-    
+
     private void checkCollision() {
         Rectangle pacManBounds = new Rectangle(pacMan.x, pacMan.y, tileSize, tileSize);
-        Ghost[] allGhosts = {blinky, pinky, inky, clyde};
+        Ghost[] allGhosts = { blinky, pinky, inky, clyde };
 
         for (Ghost ghost : allGhosts) {
-            if (ghost == null) continue;
+            if (ghost == null)
+                continue;
             Rectangle ghostBounds = new Rectangle(ghost.x, ghost.y, tileSize, tileSize);
-            
+
             if (pacManBounds.intersects(ghostBounds)) {
                 pacManHit();
                 break;
@@ -175,18 +174,18 @@ public EntityManager entityManager;
         this.lives = 3;
 
         // 2. אפס ניקוד (ודא שיש לך מתודת reset ב-ScoreManager)
-        this.scoreM.reset(); 
+        this.scoreM.reset();
 
         // 3. אפס את מיקום פקמן
         this.pacMan.setDefaultValues();
 
         // 4. אתחל את הרוחות מחדש למצבן ההתחלתי
         initializeGhosts();
-        
+
         // 5. נקה את תור היציאה של הרוחות
         exitQueue.clear();
         isExitingLaneBusy = false;
-        
+
         // 6. חזור למצב משחק רגיל
         levelManager.gameState = levelManager.playState;
     }
@@ -195,7 +194,7 @@ public EntityManager entityManager;
         gameThread = new Thread(this);
         gameThread.start();
     }
-    
+
     public void stopGame() {
         gameThread = null;
     }
@@ -231,18 +230,19 @@ public EntityManager entityManager;
             pinky.update();
             inky.update();
             clyde.update();
-            
+
             manageGhostExits();
             checkCollision();
         }
-        
+
         // מעדכנים את מנהל השלבים תמיד, כדי שיוכל לטפל גם במצבים אחרים
         levelManager.update();
     }
 
     private void drawLives(Graphics2D g2) {
-        if (lifeImage == null) return;
-        for (int i = 0; i < lives ; i++) {
+        if (lifeImage == null)
+            return;
+        for (int i = 0; i < lives; i++) {
             g2.drawImage(lifeImage, tileSize * (i + 1), screenHeight - tileSize - 10, tileSize, tileSize, null);
         }
     }
@@ -276,7 +276,7 @@ public EntityManager entityManager;
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        
+
         // --- שינוי: הוספת לוגיקה לציור לפי מצב המשחק ---
         if (levelManager.gameState != levelManager.transitionState) {
             tileM.draw(g2);
@@ -284,7 +284,7 @@ public EntityManager entityManager;
                 item.draw(g2);
             }
             pacMan.draw(g2);
-            blinky.draw(g2); 
+            blinky.draw(g2);
             pinky.draw(g2);
             inky.draw(g2);
             clyde.draw(g2);
@@ -295,7 +295,7 @@ public EntityManager entityManager;
         if (levelManager.gameState == levelManager.gameOverState) {
             drawGameOverScreen(g2);
         }
-        
+
         g2.dispose();
     }
 }

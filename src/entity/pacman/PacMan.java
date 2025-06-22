@@ -41,7 +41,6 @@ this.defaultX = x;
         x = (gp.screenWidth / 2) - 18 - (gp.tileSize / 2);
         y = (gp.screenHeight / 2) + 30 - (gp.tileSize / 2);
         speed = 3;
-
     }
 
     public void update() {

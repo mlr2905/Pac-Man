@@ -16,8 +16,8 @@ public class GhostNavigator {
         queue.offer(new int[]{startCol, startRow});
         parentMap.put(startCol + "," + startRow, "start");
 
-        int[] dRow = {-1, 1, 0, 0}; // up, down
-        int[] dCol = {0, 0, -1, 1}; // left, right
+        int[] dRow = {-1, 1, 0, 0}; 
+        int[] dCol = {0, 0, -1, 1}; 
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();

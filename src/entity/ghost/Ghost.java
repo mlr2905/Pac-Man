@@ -20,18 +20,16 @@ public class Ghost extends Entity {
     private GhostAnimationManager animationManager;
     private Random random = new Random();
 
-    // --- מאפיינים ייחודיים לכל רוח ---
-    public final int exitScoreTrigger; // הניקוד שנדרש כדי לצאת מהבית
-    public final TargetingStrategy targetingStrategy; // אסטרטגיית המרדף של הרוח
-    private boolean hasRequestedExit = false; // דגל למניעת בקשות כפולות ליציאה
- public int lastpacManTileX = -1;
+    public final int exitScoreTrigger;
+    public final TargetingStrategy targetingStrategy;
+    private boolean hasRequestedExit = false;
+    public int lastpacManTileX = -1;
     public int lastpacManTileY = -1;
-    // נקודות קבועות ליציאה מהבית (זהה לכל הרוחות)
-    public final int RETURN_TARGET_X = 18; // נקודת ביניים ביציאה (תא 8)
-    public final int RETURN_TARGET_Y = 7;  // נקודת ביניים ביציאה (תא 8)
-    public final int EXIT_TILE_X = 18;     // דלת היציאה (תא 4)
+    public final int RETURN_TARGET_X = 18;
+    public final int RETURN_TARGET_Y = 7;
+    public final int EXIT_TILE_X = 18;
     public final int EXIT_TILE_Y = 6;
-    public final int TILE_ABOVE_EXIT_X = 18; // התא מחוץ לבית
+    public final int TILE_ABOVE_EXIT_X = 18;
     public final int TILE_ABOVE_EXIT_Y = 5;
 
     private String currentMovingDirection = "none";
@@ -45,18 +43,21 @@ public class Ghost extends Entity {
 
     /**
      * בנאי גנרי לרוח רפאים.
-     * @param gp ה-GamePanel הראשי.
-     * @param name שם הרוח (לצורך טעינת אנימציות, למשל "blinky", "clyde").
-     * @param startX קואורדינטת X התחלתית.
-     * @param startY קואורדינטת Y התחלתית.
-     * @param exitScoreTrigger הניקוד שנדרש כדי שהרוח תצא מהבית.
+     * 
+     * @param gp                ה-GamePanel הראשי.
+     * @param name              שם הרוח (לצורך טעינת אנימציות, למשל "blinky",
+     *                          "clyde").
+     * @param startX            קואורדינטת X התחלתית.
+     * @param startY            קואורדינטת Y התחלתית.
+     * @param exitScoreTrigger  הניקוד שנדרש כדי שהרוח תצא מהבית.
      * @param targetingStrategy אובייקט המגדיר כיצד הרוח בוחרת את מטרתה.
      */
-    public Ghost(GamePanel gp, String name, int startX, int startY, int exitScoreTrigger, TargetingStrategy targetingStrategy) {
+    public Ghost(GamePanel gp, String name, int startX, int startY, int exitScoreTrigger,
+            TargetingStrategy targetingStrategy) {
         this.gp = gp;
         this.animationManager = new GhostAnimationManager(name, 8);
         this.solidArea = new Rectangle(6, 6, gp.tileSize - 10, gp.tileSize - 10);
-        
+
         this.exitScoreTrigger = exitScoreTrigger;
         this.targetingStrategy = targetingStrategy;
 
@@ -65,20 +66,21 @@ public class Ghost extends Entity {
 
     // בקובץ Ghost.java
 
-public void setDefaultValues(int startX, int startY) {
-    this.x = startX;
-    this.y = startY;
-    speed = 2;
-    currentMovingDirection = "none";
-    requestedDirection = "none";
-    gameStartedForGhost = false;
-    
-    // --- הוסף את השורה הבאה ---
-    // מאפס את הדגל כדי שהרוח תוכל לבקש לצאת שוב אחרי פסילה
-    this.hasRequestedExit = false; 
+    public void setDefaultValues(int startX, int startY) {
+        this.x = startX;
+        this.y = startY;
+        speed = 2;
+        currentMovingDirection = "none";
+        requestedDirection = "none";
+        gameStartedForGhost = false;
 
-    setState(new WaitingState()); // כל הרוחות מתחילות (או חוזרות) למצב המתנה
-}
+        // --- הוסף את השורה הבאה ---
+        // מאפס את הדגל כדי שהרוח תוכל לבקש לצאת שוב אחרי פסילה
+        this.hasRequestedExit = false;
+
+        setState(new WaitingState()); // כל הרוחות מתחילות (או חוזרות) למצב המתנה
+    }
+
     public void setState(GhostState newState) {
         this.currentState = newState;
     }
@@ -86,7 +88,7 @@ public void setDefaultValues(int startX, int startY) {
     public boolean hasRequestedExit() {
         return hasRequestedExit;
     }
-    
+
     public void setHasRequestedExit(boolean requested) {
         this.hasRequestedExit = requested;
     }
@@ -105,16 +107,17 @@ public void setDefaultValues(int startX, int startY) {
         boolean isMoving = !currentMovingDirection.equals("none");
         animationManager.update(isMoving);
     }
-    
+
     public void draw(Graphics2D g2) {
         BufferedImage image = animationManager.getCurrentFrame(directionForAnimation);
         if (image != null) {
             g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
         }
     }
+
     public GhostAnimationManager getAnimationManager() {
-    return this.animationManager;
-}
+        return this.animationManager;
+    }
 
     public boolean moveToTarget(int targetCol, int targetRow, MovementRule rule) {
         if (Math.abs(x - targetCol * gp.tileSize) < speed && Math.abs(y - targetRow * gp.tileSize) < speed) {
@@ -149,11 +152,24 @@ public void setDefaultValues(int startX, int startY) {
 
         int newX = x, newY = y;
         switch (currentMovingDirection) {
-            case "up": newY -= speed; directionForAnimation = 3; break;
-            case "down": newY += speed; directionForAnimation = 0; break;
-            case "left": newX -= speed; directionForAnimation = 2; break;
-            case "right": newX += speed; directionForAnimation = 1; break;
-            default: return false;
+            case "up":
+                newY -= speed;
+                directionForAnimation = 3;
+                break;
+            case "down":
+                newY += speed;
+                directionForAnimation = 0;
+                break;
+            case "left":
+                newX -= speed;
+                directionForAnimation = 2;
+                break;
+            case "right":
+                newX += speed;
+                directionForAnimation = 1;
+                break;
+            default:
+                return false;
         }
 
         if (!checkCollision(newX, newY, rule)) {
@@ -165,7 +181,7 @@ public void setDefaultValues(int startX, int startY) {
         }
     }
 
-     private boolean checkCollision(int newX, int newY, MovementRule rule) {
+    private boolean checkCollision(int newX, int newY, MovementRule rule) {
         Rectangle futureSolidArea = new Rectangle(newX + solidArea.x, newY + solidArea.y, solidArea.width,
                 solidArea.height);
         int leftTile = futureSolidArea.x / gp.tileSize;
@@ -202,7 +218,7 @@ public void setDefaultValues(int startX, int startY) {
         }
         return false;
     }
-    
+
     public boolean canMoveInDirection(String dir, MovementRule rule) {
         if ("none".equals(dir))
             return false;
@@ -233,18 +249,18 @@ public void setDefaultValues(int startX, int startY) {
     public void determineRandomDirectionInHouse() {
         determineRandomDirection(MovementRule.IN_HOUSE);
     }
-    
+
     private void determineRandomDirection(MovementRule rule) {
         if ("none".equals(currentMovingDirection) || !canMoveInDirection(currentMovingDirection, rule)) {
-            
+
             ArrayList<String> possibleDirections = new ArrayList<>();
-            String[] allDirections = {"up", "down", "left", "right"};
+            String[] allDirections = { "up", "down", "left", "right" };
             for (String dir : allDirections) {
                 if (canMoveInDirection(dir, rule)) {
                     possibleDirections.add(dir);
                 }
             }
-            
+
             if (!possibleDirections.isEmpty()) {
                 String opposite = getOppositeDirection(currentMovingDirection);
                 if (possibleDirections.size() > 1) {
@@ -271,7 +287,7 @@ public void setDefaultValues(int startX, int startY) {
                 return "none";
         }
     }
-    
+
     public void setRequestedDirection(String dir) {
         this.requestedDirection = dir;
     }

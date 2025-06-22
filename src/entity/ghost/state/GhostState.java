@@ -3,5 +3,5 @@ package entity.ghost.state;
 import entity.ghost.Ghost;
 
 public interface GhostState {
-    void update(Ghost ghost); // מקבל אובייקט Ghost גנרי
+    void update(Ghost ghost); 
 }
