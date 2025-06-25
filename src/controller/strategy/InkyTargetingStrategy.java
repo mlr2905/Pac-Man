@@ -1,4 +1,4 @@
-package entity.strategy;
+package controller.strategy;
 
 import entity.ghost.Ghost;
 import entity.pacman.PacMan;

@@ -1,13 +1,13 @@
 package managers;
 
 import entity.ghost.Ghost;
-import entity.strategy.BlinkyTargetingStrategy;
-import entity.strategy.ClydeTargetingStrategy;
-import entity.strategy.InkyTargetingStrategy;
-import entity.strategy.PinkyTargetingStrategy;
-import entity.strategy.TargetingStrategy;
 import view.GamePanel;
 import collectibles.Collectable;
+import controller.strategy.BlinkyTargetingStrategy;
+import controller.strategy.ClydeTargetingStrategy;
+import controller.strategy.InkyTargetingStrategy;
+import controller.strategy.PinkyTargetingStrategy;
+import controller.strategy.TargetingStrategy;
 
 public class EntityManager {
 

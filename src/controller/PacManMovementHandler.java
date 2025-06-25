@@ -1,6 +1,6 @@
-package entity.pacman;
+package controller;
 
-import controller.KeyHandler;
+import entity.pacman.PacMan;
 import view.GamePanel;
 
 public class PacManMovementHandler {

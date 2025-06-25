@@ -9,10 +9,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
+import controller.strategy.TargetingStrategy;
 import entity.Entity;
 import entity.state.GhostState;
 import entity.state.WaitingState;
-import entity.strategy.TargetingStrategy;
 
 public class Ghost extends Entity {
 

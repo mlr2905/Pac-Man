@@ -10,6 +10,7 @@ import view.GamePanel;
 import view.animations.PacManAnimationManager;
 import collectibles.Collectable;
 import controller.KeyHandler;
+import controller.PacManMovementHandler;
 
 public class PacMan extends Entity {
 
@@ -18,7 +19,7 @@ public class PacMan extends Entity {
     private PacManMovementHandler movementHandler;
     private PacManAnimationManager animationManager;
     private final int defaultX, defaultY;
-    public int direction = 0; 
+    public int direction = 0;
     public Rectangle solidArea;
 
     public PacMan(GamePanel gp, KeyHandler keyH) {
@@ -26,17 +27,18 @@ public class PacMan extends Entity {
 
         this.movementHandler = new PacManMovementHandler(this, gp, keyH);
         this.animationManager = new PacManAnimationManager(this);
-this.defaultX = x; 
-    this.defaultY = y;
+        this.defaultX = x;
+        this.defaultY = y;
         solidArea = new Rectangle(8, 8, gp.tileSize - 12, gp.tileSize - 12);
         setDefaultValues();
     }
 
     public void resetPosition() {
-    this.x = defaultX;
-    this.y = defaultY;
-    this.direction = 0; // אפס גם את כיוון התנועה
-}
+        this.x = defaultX;
+        this.y = defaultY;
+        this.direction = 0; // אפס גם את כיוון התנועה
+    }
+
     public void setDefaultValues() {
         x = (gp.screenWidth / 2) - 18 - (gp.tileSize / 2);
         y = (gp.screenHeight / 2) + 30 - (gp.tileSize / 2);
