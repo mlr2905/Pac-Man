@@ -173,7 +173,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.scoreM.reset();
 
         this.pacMan.setDefaultValues();
-
+ for (Collectable item : collectables) {
+        item.setCollected(false);
+    }
         initializeGhosts();
 
         exitQueue.clear();

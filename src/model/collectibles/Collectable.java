@@ -1,15 +1,14 @@
-// New: Collectable.java interface
 package collectibles;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
-
 import managers.ScoreManager;
 
 public interface Collectable {
+    void update();
+    void draw(Graphics2D g2);
     boolean isCollected();
     void setCollected(boolean collected);
     Rectangle getSolidArea();
-    void onCollected(ScoreManager sm); // Method to handle score addition etc.
-    void draw(java.awt.Graphics2D g2); // If you want a common draw method
-    void update(); // For update logic, like blinking for PowerPellet
+    void onCollected(ScoreManager sm);
 }
