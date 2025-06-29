@@ -22,23 +22,27 @@ public class PacManAnimationManager {
     public void loadpacManImages() {
         try {
             BufferedImage down = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanDown.png"));
+            BufferedImage down2 = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanDown2.png"));
             BufferedImage right = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanRight.png"));
+            BufferedImage right2 = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanRight2.png"));
             BufferedImage left = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanLeft.png"));
+            BufferedImage left2 = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanLeft2.png"));
             BufferedImage up = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanUp.png"));
+            BufferedImage up2 = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanUp2.png"));
             BufferedImage Closed = ImageIO.read(getClass().getResourceAsStream("/view/resources/pacMan/pacmanClosed.png"));
 
             frames = new BufferedImage[4][3];
             frames[0][0] = down;
-            frames[0][1] = Closed;
+            frames[0][1] = down2;
             frames[0][2] = down;
             frames[1][0] = right;
-            frames[1][1] = Closed;
+            frames[1][1] = right2;
             frames[1][2] = right;
             frames[2][0] = left;
-            frames[2][1] = Closed;
+            frames[2][1] = left2;
             frames[2][2] = left;
             frames[3][0] = up;
-            frames[3][1] = Closed;
+            frames[3][1] = up2;
             frames[3][2] = up;
 
             System.out.println("pacMan images loaded successfully!");

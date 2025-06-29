@@ -35,7 +35,7 @@ public class Pellet extends Entity implements Collectable {
     @Override
     public void draw(Graphics2D g2) {
         if (!collected) {
-            int pelletSize = gp.tileSize / 4;
+            int pelletSize = gp.tileSize /2+10;
             int offset = (gp.tileSize - pelletSize) / 2;
             g2.drawImage(image, x + offset, y + offset, pelletSize, pelletSize, null);
         }

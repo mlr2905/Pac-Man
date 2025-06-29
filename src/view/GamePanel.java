@@ -66,7 +66,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(Color.black);
+        this.setBackground(Color.gray);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
@@ -173,9 +173,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.scoreM.reset();
 
         this.pacMan.setDefaultValues();
- for (Collectable item : collectables) {
-        item.setCollected(false);
-    }
+        for (Collectable item : collectables) {
+            item.setCollected(false);
+        }
         initializeGhosts();
 
         exitQueue.clear();
