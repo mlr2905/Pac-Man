@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -27,6 +28,7 @@ import entity.state.ExitingHouseState;
 import managers.EntityManager;
 import managers.LevelManager;
 import managers.ScoreManager;
+import managers.PowerPelletManager;
 import map.MapData;
 import tile.TileManager;
 
@@ -47,6 +49,7 @@ public class GamePanel extends JPanel implements Runnable {
     public TileManager tileM;
     public ScoreManager scoreM;
     public LevelManager levelManager;
+    public PowerPelletManager powerPelletManager; // הוספה חדשה
     public int lives;
 
     public PacMan pacMan;
@@ -74,6 +77,7 @@ public class GamePanel extends JPanel implements Runnable {
         tileM = new TileManager(this);
         scoreM = new ScoreManager(this);
         levelManager = new LevelManager(this);
+        powerPelletManager = new PowerPelletManager(); // הוספה חדשה
         lives = 3;
         pacMan = new PacMan(this, keyH);
 
@@ -101,6 +105,16 @@ public class GamePanel extends JPanel implements Runnable {
         pinky = new Ghost(this, "pinky", startTileX * tileSize, startTileY * tileSize, 200, pinkyStrategy);
         inky = new Ghost(this, "inky", startTileX * tileSize, startTileY * tileSize, 300, inkyStrategy);
         clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 400, clydeStrategy);
+    }
+
+    // הוספת מתודה חדשה לקבלת כל הרוחות
+    public List<Ghost> getAllGhosts() {
+        List<Ghost> allGhosts = new ArrayList<>();
+        allGhosts.add(blinky);
+        allGhosts.add(pinky);
+        allGhosts.add(inky);
+        allGhosts.add(clyde);
+        return allGhosts;
     }
 
     public void findTeleportTiles() {
@@ -134,18 +148,30 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    // עדכון מתודת checkCollision
     private void checkCollision() {
-        Rectangle pacManBounds = new Rectangle(pacMan.x, pacMan.y, tileSize, tileSize);
+        Rectangle pacManBounds = new Rectangle(pacMan.x + pacMan.solidArea.x, pacMan.y + pacMan.solidArea.y, 
+                                             pacMan.solidArea.width, pacMan.solidArea.height);
         Ghost[] allGhosts = { blinky, pinky, inky, clyde };
 
         for (Ghost ghost : allGhosts) {
             if (ghost == null)
                 continue;
-            Rectangle ghostBounds = new Rectangle(ghost.x, ghost.y, tileSize, tileSize);
+            Rectangle ghostBounds = new Rectangle(ghost.x + ghost.solidArea.x, ghost.y + ghost.solidArea.y, 
+                                                ghost.solidArea.width, ghost.solidArea.height);
 
             if (pacManBounds.intersects(ghostBounds)) {
-                pacManHit();
-                break;
+                if (ghost.isFrightened() && !ghost.isEaten()) {
+                    // פקמן אוכל רוח
+                    ghost.setEaten(true);
+                    int score = powerPelletManager.getGhostEatenScore();
+                    scoreM.addScore(score);
+                    System.out.println("Ghost eaten! Score: " + score);
+                } else if (!ghost.isFrightened() && !ghost.isEaten()) {
+                    // רוח אוכלת את פקמן
+                    pacManHit();
+                    break;
+                }
             }
         }
     }
@@ -171,6 +197,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.lives = 3;
 
         this.scoreM.reset();
+        this.powerPelletManager.resetGhostEatenCount(); // איפוס מונה הרוחות
 
         this.pacMan.setDefaultValues();
         for (Collectable item : collectables) {

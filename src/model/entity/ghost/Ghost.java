@@ -13,6 +13,7 @@ import controller.strategy.TargetingStrategy;
 import entity.Entity;
 import entity.state.GhostState;
 import entity.state.WaitingState;
+import entity.state.ReturningHomeState;
 
 public class Ghost extends Entity {
 
@@ -38,6 +39,12 @@ public class Ghost extends Entity {
     private String requestedDirection = "none";
     private int directionForAnimation = 0;
     private boolean gameStartedForGhost = false;
+    
+    // Frightened mode variables
+    private boolean frightenedMode = false;
+    private boolean eaten = false;
+    private boolean returningHome = false;
+    private boolean frightenedFrameAlternate = false;
 
     public enum MovementRule {
         IN_HOUSE, THROUGH_HOUSE_DOOR, CHASE
@@ -51,9 +58,11 @@ public class Ghost extends Entity {
 
         this.exitScoreTrigger = exitScoreTrigger;
         this.targetingStrategy = targetingStrategy;
-
+        
         setDefaultValues(startX, startY);
     }
+    
+
 
     public void setDefaultValues(int startX, int startY) {
         this.x = startX;
@@ -62,6 +71,10 @@ public class Ghost extends Entity {
         currentMovingDirection = "none";
         requestedDirection = "none";
         gameStartedForGhost = false;
+        frightenedMode = false;
+        eaten = false;
+        returningHome = false;
+        frightenedFrameAlternate = false;
 
         this.hasRequestedExit = false;
 
@@ -69,7 +82,13 @@ public class Ghost extends Entity {
     }
 
     public void setState(GhostState newState) {
+        System.out.println("Ghost state changing to: " + newState.getClass().getSimpleName()); // Debug
         this.currentState = newState;
+        if (newState instanceof ReturningHomeState) {
+            returningHome = true;
+        } else if (newState instanceof WaitingState) {
+            returningHome = false;
+        }
     }
 
     public boolean hasRequestedExit() {
@@ -78,6 +97,38 @@ public class Ghost extends Entity {
 
     public void setHasRequestedExit(boolean requested) {
         this.hasRequestedExit = requested;
+    }
+    
+    public void setFrightenedMode(boolean frightened) {
+        this.frightenedMode = frightened;
+        if (!frightened) {
+            frightenedFrameAlternate = false;
+        }
+    }
+    
+    public boolean isFrightened() {
+        return frightenedMode;
+    }
+    
+    public void setEaten(boolean eaten) {
+        this.eaten = eaten;
+        if (eaten) {
+            this.frightenedMode = false; // חשוב: כבה את מצב הפחד
+            System.out.println("Ghost is being eaten! Setting state to ReturningHomeState"); // Debug
+            setState(new ReturningHomeState());
+        }
+    }
+    
+    public boolean isEaten() {
+        return eaten;
+    }
+    
+    public boolean isReturningHome() {
+        return returningHome;
+    }
+    
+    public void switchFrightenedFrame() {
+        frightenedFrameAlternate = !frightenedFrameAlternate;
     }
 
     public void update() {
@@ -89,16 +140,38 @@ public class Ghost extends Entity {
             return;
         }
 
-        currentState.update(this); // קורא למצב הנוכחי עם אובייקט הרוח הנוכחי
+        currentState.update(this);
 
         boolean isMoving = !currentMovingDirection.equals("none");
         animationManager.update(isMoving);
     }
 
     public void draw(Graphics2D g2) {
-        BufferedImage image = animationManager.getCurrentFrame(directionForAnimation);
+        BufferedImage image = null;
+        
+        if (eaten) {
+            // Show eyes when eaten - this takes priority over everything else
+            image = animationManager.getEyesFrame(directionForAnimation);
+            System.out.println("Drawing eyes frame for direction: " + directionForAnimation); // Debug
+        } else if (frightenedMode) {
+            // Check if we should show blinking frames (when frightened time is almost up)
+            if (currentState instanceof entity.state.FrightenedState && 
+                ((entity.state.FrightenedState) currentState).isBlinking()) {
+                // Show blinking frames
+                image = animationManager.getBlinkingFrame(frightenedFrameAlternate);
+            } else {
+                // Show regular frightened frames
+                image = animationManager.getFrightenedFrame(frightenedFrameAlternate);
+            }
+        } else {
+            // Use normal animation frames
+            image = animationManager.getCurrentFrame(directionForAnimation);
+        }
+        
         if (image != null) {
             g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        } else {
+            System.err.println("Warning: No image to draw for ghost state - eaten: " + eaten + ", frightened: " + frightenedMode);
         }
     }
 
@@ -193,7 +266,7 @@ public class Ghost extends Entity {
                         isWall = (tileValue != 6 && tileValue != 8 && tileValue != 4 && tileValue != 0);
                         break;
                     case CHASE:
-                        isWall = !(tileValue == 0 || tileValue == 2 || tileValue == 7);
+                        isWall = !(tileValue == 0 || tileValue == 2 || tileValue == 7 || (tileValue == 4 && eaten)); // Allow tile 4 when eaten
                         break;
                     default:
                         isWall = true;

@@ -10,6 +10,14 @@ import map.MapData;
 public class GhostNavigator {
 
     public static String getShortestPathDirection(int startCol, int startRow, int targetCol, int targetRow) {
+        return getShortestPathDirection(startCol, startRow, targetCol, targetRow, false);
+    }
+    
+    public static String getShortestPathDirectionForEaten(int startCol, int startRow, int targetCol, int targetRow) {
+        return getShortestPathDirection(startCol, startRow, targetCol, targetRow, true);
+    }
+
+    private static String getShortestPathDirection(int startCol, int startRow, int targetCol, int targetRow, boolean isEaten) {
         Queue<int[]> queue = new LinkedList<>();
         Map<String, String> parentMap = new HashMap<>();
 
@@ -30,7 +38,7 @@ public class GhostNavigator {
                 int nextRow = current[1] + dRow[i];
                 String nextCoord = nextCol + "," + nextRow;
 
-                if (isValidTile(nextCol, nextRow) && !parentMap.containsKey(nextCoord)) {
+                if (isValidTile(nextCol, nextRow, isEaten) && !parentMap.containsKey(nextCoord)) {
                     parentMap.put(nextCoord, current[0] + "," + current[1]);
                     queue.offer(new int[]{nextCol, nextRow});
                 }
@@ -39,12 +47,19 @@ public class GhostNavigator {
         return "none"; 
     }
 
-    private static boolean isValidTile(int col, int row) {
+    private static boolean isValidTile(int col, int row, boolean isEaten) {
         if (row < 0 || row >= MapData.INITIAL_MAP_DATA.length || col < 0 || col >= MapData.INITIAL_MAP_DATA[0].length) {
             return false;
         }
         int tileValue = MapData.INITIAL_MAP_DATA[row][col];
-        return tileValue == 0 || tileValue == 2 || tileValue == 7;
+        
+        if (isEaten) {
+            // Eaten ghosts can pass through normal tiles AND house door (tile 4)
+            return tileValue == 0 || tileValue == 2 || tileValue == 7 || tileValue == 4;
+        } else {
+            // Normal ghosts can only use regular tiles
+            return tileValue == 0 || tileValue == 2 || tileValue == 7;
+        }
     }
 
     private static String getFirstStepFromPath(int startCol, int startRow, int targetCol, int targetRow, Map<String, String> parentMap) {

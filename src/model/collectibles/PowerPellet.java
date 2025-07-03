@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import entity.Entity;
 import managers.ScoreManager;
+import managers.PowerPelletManager;
 import view.GamePanel;
 
 public class PowerPellet extends Entity implements Collectable {
@@ -70,7 +71,12 @@ public class PowerPellet extends Entity implements Collectable {
     public void onCollected(ScoreManager sm) {
         setCollected(true);
         sm.addScore(50); // Score for a power pellet
-        // Here you could also trigger a "power-up" state for the player
-        System.out.println("Power Pellet collected! Player powered up!");
+        
+        // Activate frightened mode for all ghosts
+        if (gp.powerPelletManager != null) {
+            gp.powerPelletManager.activatePowerMode(gp.getAllGhosts());
+        }
+        
+        System.out.println("Power Pellet collected! Ghosts are now frightened!");
     }
 }

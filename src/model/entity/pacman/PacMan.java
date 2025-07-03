@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.Color;
 
 import entity.Entity;
+import entity.ghost.Ghost;
 import view.GamePanel;
 import view.animations.PacManAnimationManager;
 import collectibles.Collectable;
@@ -36,7 +37,7 @@ public class PacMan extends Entity {
     public void resetPosition() {
         this.x = defaultX;
         this.y = defaultY;
-        this.direction = 0; // אפס גם את כיוון התנועה
+        this.direction = 0;
     }
 
     public void setDefaultValues() {
