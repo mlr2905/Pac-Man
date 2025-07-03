@@ -127,6 +127,14 @@ public class Ghost extends Entity {
         return returningHome;
     }
     
+    public boolean isInWaitingState() {
+        return currentState instanceof entity.state.WaitingState;
+    }
+    
+    public boolean isExitingHouse() {
+        return currentState instanceof entity.state.ExitingHouseState;
+    }
+    
     public void switchFrightenedFrame() {
         frightenedFrameAlternate = !frightenedFrameAlternate;
     }

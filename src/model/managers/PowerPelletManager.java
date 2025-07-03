@@ -12,10 +12,14 @@ public class PowerPelletManager {
         ghostEatenCount = 0; // Reset counter for new power pellet
         
         for (Ghost ghost : ghosts) {
-            // Only frighten ghosts that are not already eaten or returning home
-            if (!ghost.isEaten() && !ghost.isReturningHome()) {
+            // Only frighten ghosts that are outside the house (not in WaitingState or ExitingHouseState)
+            if (!ghost.isEaten() && !ghost.isReturningHome() && 
+                !ghost.isInWaitingState() && !ghost.isExitingHouse()) {
                 ghost.setState(new FrightenedState());
                 ghost.setFrightenedMode(true);
+                System.out.println("Ghost frightened!");
+            } else {
+                System.out.println("Ghost NOT frightened (in house, eaten, or returning home)");
             }
         }
     }
