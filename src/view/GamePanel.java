@@ -29,6 +29,7 @@ import managers.EntityManager;
 import managers.LevelManager;
 import managers.ScoreManager;
 import managers.PowerPelletManager;
+import managers.FruitManager; // הוספה חדשה
 import map.MapData;
 import tile.TileManager;
 
@@ -49,7 +50,8 @@ public class GamePanel extends JPanel implements Runnable {
     public TileManager tileM;
     public ScoreManager scoreM;
     public LevelManager levelManager;
-    public PowerPelletManager powerPelletManager; // הוספה חדשה
+    public PowerPelletManager powerPelletManager;
+    public FruitManager fruitManager; // הוספה חדשה
     public int lives;
 
     public PacMan pacMan;
@@ -77,7 +79,8 @@ public class GamePanel extends JPanel implements Runnable {
         tileM = new TileManager(this);
         scoreM = new ScoreManager(this);
         levelManager = new LevelManager(this);
-        powerPelletManager = new PowerPelletManager(); // הוספה חדשה
+        powerPelletManager = new PowerPelletManager();
+        fruitManager = new FruitManager(this); // הוספה חדשה
         lives = 3;
         pacMan = new PacMan(this, keyH);
 
@@ -107,7 +110,6 @@ public class GamePanel extends JPanel implements Runnable {
         clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 400, clydeStrategy);
     }
 
-    // הוספת מתודה חדשה לקבלת כל הרוחות
     public List<Ghost> getAllGhosts() {
         List<Ghost> allGhosts = new ArrayList<>();
         allGhosts.add(blinky);
@@ -148,7 +150,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // עדכון מתודת checkCollision
     private void checkCollision() {
         Rectangle pacManBounds = new Rectangle(pacMan.x + pacMan.solidArea.x, pacMan.y + pacMan.solidArea.y,
                 pacMan.solidArea.width, pacMan.solidArea.height);
@@ -162,13 +163,11 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (pacManBounds.intersects(ghostBounds)) {
                 if (ghost.isFrightened() && !ghost.isEaten()) {
-                    // פקמן אוכל רוח
                     ghost.setEaten(true);
                     int score = powerPelletManager.getGhostEatenScore();
                     scoreM.addScore(score);
                     System.out.println("Ghost eaten! Score: " + score);
                 } else if (!ghost.isFrightened() && !ghost.isEaten()) {
-                    // רוח אוכלת את פקמן
                     pacManHit();
                     break;
                 }
@@ -183,7 +182,6 @@ public class GamePanel extends JPanel implements Runnable {
             levelManager.gameState = levelManager.gameOverState;
         } else {
             pacMan.setDefaultValues();
-
             GhostsetDefaultValues();
         }
     }
@@ -199,13 +197,22 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void restartGame() {
         this.lives = 3;
-
         this.scoreM.reset();
         this.powerPelletManager.resetGhostEatenCount();
+        this.fruitManager.reset(); // הוספה חדשה
 
+        // איפוס רמה ל-1
+        levelManager.currentLevel = 1;
+        
         this.pacMan.setDefaultValues();
         for (Collectable item : collectables) {
-            item.setCollected(false);
+            if (item instanceof collectibles.Pellet || item instanceof collectibles.PowerPellet) {
+                item.setCollected(false);
+                // אם זה פלטת רגילה, מוודא שהיא לא מוסתרת
+                if (item instanceof collectibles.Pellet) {
+                    ((collectibles.Pellet) item).setTemporarilyHidden(false);
+                }
+            }
         }
         initializeGhosts();
 
@@ -213,6 +220,13 @@ public class GamePanel extends JPanel implements Runnable {
         isExitingLaneBusy = false;
 
         levelManager.gameState = levelManager.playState;
+        System.out.println("Game restarted! Level 1 started!");
+    }
+
+    // הוספת מתודה חדשה לניהול מעבר לרמה הבאה
+    public void nextLevel() {
+        fruitManager.nextLevel();
+        // כאן תוכל להוסיף עוד לוגיקה לניהול רמות
     }
 
     public void startGameThread() {
@@ -255,11 +269,69 @@ public class GamePanel extends JPanel implements Runnable {
             inky.update();
             clyde.update();
 
+            fruitManager.update(); // הוספה חדשה
             manageGhostExits();
             checkCollision();
+            checkLevelComplete(); // בדיקת סיום שלב
         }
 
         levelManager.update();
+    }
+    
+    // בדיקה אם כל הפלטות נאספו
+    private void checkLevelComplete() {
+        boolean allPelletsCollected = true;
+        
+        for (Collectable item : collectables) {
+            // בדיקה רק של פלטות רגילות ו-Power Pellets, לא פירות
+            if ((item instanceof collectibles.Pellet || item instanceof collectibles.PowerPellet) 
+                && !item.isCollected()) {
+                allPelletsCollected = false;
+                break;
+            }
+        }
+        
+        if (allPelletsCollected) {
+            System.out.println("Level Complete! All pellets collected!");
+            advanceToNextLevel();
+        }
+    }
+    
+    // מעבר לשלב הבא
+    private void advanceToNextLevel() {
+        levelManager.currentLevel++;
+        
+        if (levelManager.currentLevel > 3) {
+            // ניצחון - סיום המשחק
+            levelManager.gameState = levelManager.gameOverState;
+            System.out.println("Game Complete! You Win!");
+        } else {
+            // מעבר לשלב הבא
+            System.out.println("Advancing to level " + levelManager.currentLevel);
+            
+            // איפוס הפלטות לשלב חדש
+            for (Collectable item : collectables) {
+                if (item instanceof collectibles.Pellet || item instanceof collectibles.PowerPellet) {
+                    item.setCollected(false);
+                    // אם זה פלטת רגילה, מוודא שהיא לא מוסתרת
+                    if (item instanceof collectibles.Pellet) {
+                        ((collectibles.Pellet) item).setTemporarilyHidden(false);
+                    }
+                }
+            }
+            
+            // איפוס מיקומי השחקנים
+            pacMan.setDefaultValues();
+            GhostsetDefaultValues();
+            
+            // איפוס מנהל הפירות לשלב חדש
+            fruitManager.nextLevel();
+            
+            // איפוס מנהל ה-Power Pellets
+            powerPelletManager.resetGhostEatenCount();
+            
+            System.out.println("Level " + levelManager.currentLevel + " started!");
+        }
     }
 
     private void drawLives(Graphics2D g2) {
@@ -270,14 +342,38 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void drawGameOverScreen(Graphics2D g2) {
+    // הוספת מתודה להצגת מידע על פירות
+    private void drawFruitInfo(Graphics2D g2) {
+        if (fruitManager.isFruitActive()) {
+            g2.setFont(new Font("Arial", Font.PLAIN, 16));
+            g2.setColor(Color.YELLOW);
+            
+            String fruitInfo = "Current Fruit: " + fruitManager.getCurrentFruitType().name() + 
+                             " (" + fruitManager.getCurrentFruitType().getPoints() + " pts)";
+            g2.drawString(fruitInfo, 500, 15);
+            
+            long timeUntilMove = fruitManager.getTimeUntilNextMove() / 1000;
+            String timeInfo = "Next move in: " + timeUntilMove + "s";
+            g2.drawString(timeInfo, 300, 15);
+            
+            // הצגת רצף הפירות
+            g2.setFont(new Font("Arial", Font.PLAIN, 12));
+            g2.setColor(Color.CYAN);
+         
+        } else {
+            g2.setFont(new Font("Arial", Font.PLAIN, 16));
+            g2.setColor(Color.WHITE);
+            g2.drawString("No fruit active", 10, 30);
+        }
+    }
+
+    private void drawGameOverScreen(String text, Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, screenWidth, screenHeight);
 
         g2.setFont(new Font("Arial", Font.BOLD, 80));
         g2.setColor(Color.red);
 
-        String text = "GAME OVER";
         int x = getXforCenteredText(text, g2);
         int y = screenHeight / 2;
         g2.drawString(text, x, y);
@@ -289,12 +385,12 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawString(text, x, y + 60);
     }
 
-      public void drawYouWin(Graphics2D g2) {
+    public void drawYouWin(Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, screenWidth, screenHeight);
 
         g2.setFont(new Font("Arial", Font.BOLD, 80));
-        g2.setColor(Color.red);
+        g2.setColor(Color.green);
 
         String text = "YOU WIN";
         int x = getXforCenteredText(text, g2);
@@ -307,6 +403,7 @@ public class GamePanel extends JPanel implements Runnable {
         x = getXforCenteredText(text, g2);
         g2.drawString(text, x, y + 60);
     }
+
     private int getXforCenteredText(String text, Graphics2D g2) {
         int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
         return screenWidth / 2 - length / 2;
@@ -321,7 +418,6 @@ public class GamePanel extends JPanel implements Runnable {
             tileM.draw(g2);
             for (Collectable item : collectables) {
                 item.draw(g2);
-
             }
 
             pacMan.draw(g2);
@@ -331,15 +427,17 @@ public class GamePanel extends JPanel implements Runnable {
             clyde.draw(g2);
             scoreM.draw(g2, levelManager.getCurrentLevel());
             drawLives(g2);
-        }
-        if (levelManager.currentLevel == 4) {
-            drawYouWin(g2);
-        }
-
-         else if (levelManager.gameState == levelManager.gameOverState) {
-            drawGameOverScreen(g2);
+            drawFruitInfo(g2); // הוספה חדשה
         }
         
+        if (levelManager.gameState == levelManager.gameOverState) {
+            if (levelManager.currentLevel == 3) {
+                drawGameOverScreen("YOU WIN", g2);
+                levelManager.currentLevel = 1;
+            } else {
+                drawGameOverScreen("GAME OVER", g2);
+            }
+        }
 
         g2.dispose();
     }
