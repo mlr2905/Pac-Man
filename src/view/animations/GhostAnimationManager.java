@@ -119,4 +119,21 @@ public class GhostAnimationManager {
         }
         return null;
     }
+        
+    public BufferedImage getSmallEyesFrame(int direction) {
+        if (eyesFrames != null && direction >= 0 && direction < eyesFrames.length) {
+            BufferedImage originalEyes = eyesFrames[direction];
+            if (originalEyes != null) {
+                // Create a new 16x16 image
+                BufferedImage smallEyes = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+                java.awt.Graphics2D g2 = smallEyes.createGraphics();
+                g2.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, 
+                                   java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2.drawImage(originalEyes, 0, 0, 16, 16, null);
+                g2.dispose();
+                return smallEyes;
+            }
+        }
+        return null;
+    }
 }

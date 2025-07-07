@@ -16,6 +16,7 @@ public class LevelManager {
     public final int playState = 1;
     public final int transitionState = 2;
     public final int gameOverState = 3;
+    public int victoryState = 3; 
     public int gameState;
 
     public LevelManager(GamePanel gp) {
@@ -51,6 +52,9 @@ public class LevelManager {
         
         if (currentLevel < maxLevel) {
             currentLevel++;
+            gp.lives++;
+            
+
             gameState = transitionState;
             System.out.println("All items collected! Advancing to level " + currentLevel);
         } else {

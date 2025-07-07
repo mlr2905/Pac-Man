@@ -38,7 +38,6 @@ public class PacManMovementHandler {
             currentMovingDirection = requestedDirection; 
             requestedDirection = "none"; 
         }
-
         boolean moved = executeMovement();
         checkTeleport();
         return moved;
@@ -85,7 +84,7 @@ public class PacManMovementHandler {
         }
 
         int newX = pacMan.x, newY = pacMan.y;
-
+        
         switch (currentMovingDirection) {
             case "up":
                 newY -= pacMan.speed;
@@ -117,18 +116,17 @@ public class PacManMovementHandler {
 
     private boolean checkCollision(int newX, int newY) {
         int pacManSize = gp.tileSize;
-        int margin = 2;
 
-        int leftBound = newX + margin;
-        int rightBound = newX + pacManSize - margin;
-        int topBound = newY + margin;
-        int bottomBound = newY + pacManSize - margin;
+        int leftBound = newX ;
+        int rightBound = newX + pacManSize  - 1;
+        int topBound = newY ;
+        int bottomBound = newY + pacManSize  - 1;
 
         int leftTile = leftBound / gp.tileSize;
         int rightTile = rightBound / gp.tileSize;
         int topTile = topBound / gp.tileSize;
         int bottomTile = bottomBound / gp.tileSize;
-
+      
         for (int row = topTile; row <= bottomTile; row++) {
             for (int col = leftTile; col <= rightTile; col++) {
                 if (isWall(col, row)) {
@@ -156,7 +154,7 @@ public class PacManMovementHandler {
 
         if (pacManCol < 0 || pacManCol >= gp.tileM.map[0].length || pacManRow < 0 || pacManRow >= gp.tileM.map.length) {
             return;
-        }
+        } 
 
         if (gp.tileM.map[pacManRow][pacManCol] == 3) {
             if (pacManCol == gp.teleport1[0] && pacManRow == gp.teleport1[1]) {

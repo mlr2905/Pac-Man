@@ -34,7 +34,7 @@ import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    final int originalTileSize = 16;
+    final int originalTileSize = 15;
     final int scale = 2;
     public final int tileSize = originalTileSize * scale;
     public final int maxScreenCol = 38;
@@ -140,7 +140,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.isExitingLaneBusy = busy;
     }
 
-    private void manageGhostExits() {
+    public void manageGhostExits() {
         if (!isExitingLaneBusy && !exitQueue.isEmpty()) {
             Ghost ghostToExit = exitQueue.poll();
             isExitingLaneBusy = true;
@@ -150,15 +150,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     // עדכון מתודת checkCollision
     private void checkCollision() {
-        Rectangle pacManBounds = new Rectangle(pacMan.x + pacMan.solidArea.x, pacMan.y + pacMan.solidArea.y, 
-                                             pacMan.solidArea.width, pacMan.solidArea.height);
+        Rectangle pacManBounds = new Rectangle(pacMan.x + pacMan.solidArea.x, pacMan.y + pacMan.solidArea.y,
+                pacMan.solidArea.width, pacMan.solidArea.height);
         Ghost[] allGhosts = { blinky, pinky, inky, clyde };
 
         for (Ghost ghost : allGhosts) {
             if (ghost == null)
                 continue;
-            Rectangle ghostBounds = new Rectangle(ghost.x + ghost.solidArea.x, ghost.y + ghost.solidArea.y, 
-                                                ghost.solidArea.width, ghost.solidArea.height);
+            Rectangle ghostBounds = new Rectangle(ghost.x + ghost.solidArea.x, ghost.y + ghost.solidArea.y,
+                    ghost.solidArea.width, ghost.solidArea.height);
 
             if (pacManBounds.intersects(ghostBounds)) {
                 if (ghost.isFrightened() && !ghost.isEaten()) {
@@ -184,20 +184,24 @@ public class GamePanel extends JPanel implements Runnable {
         } else {
             pacMan.setDefaultValues();
 
-            int startTileX = 18;
-            int startTileY = 7;
-            blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-            pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-            inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-            clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+            GhostsetDefaultValues();
         }
+    }
+
+    public void GhostsetDefaultValues() {
+        int startTileX = 18;
+        int startTileY = 7;
+        blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+        pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+        inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+        clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
     }
 
     public void restartGame() {
         this.lives = 3;
 
         this.scoreM.reset();
-        this.powerPelletManager.resetGhostEatenCount(); // איפוס מונה הרוחות
+        this.powerPelletManager.resetGhostEatenCount();
 
         this.pacMan.setDefaultValues();
         for (Collectable item : collectables) {
@@ -285,6 +289,24 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawString(text, x, y + 60);
     }
 
+      public void drawYouWin(Graphics2D g2) {
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, screenWidth, screenHeight);
+
+        g2.setFont(new Font("Arial", Font.BOLD, 80));
+        g2.setColor(Color.red);
+
+        String text = "YOU WIN";
+        int x = getXforCenteredText(text, g2);
+        int y = screenHeight / 2;
+        g2.drawString(text, x, y);
+
+        g2.setFont(new Font("Arial", Font.PLAIN, 30));
+        g2.setColor(Color.white);
+        text = "Press Enter to Restart";
+        x = getXforCenteredText(text, g2);
+        g2.drawString(text, x, y + 60);
+    }
     private int getXforCenteredText(String text, Graphics2D g2) {
         int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
         return screenWidth / 2 - length / 2;
@@ -299,7 +321,9 @@ public class GamePanel extends JPanel implements Runnable {
             tileM.draw(g2);
             for (Collectable item : collectables) {
                 item.draw(g2);
+
             }
+
             pacMan.draw(g2);
             blinky.draw(g2);
             pinky.draw(g2);
@@ -308,10 +332,14 @@ public class GamePanel extends JPanel implements Runnable {
             scoreM.draw(g2, levelManager.getCurrentLevel());
             drawLives(g2);
         }
+        if (levelManager.currentLevel == 4) {
+            drawYouWin(g2);
+        }
 
-        if (levelManager.gameState == levelManager.gameOverState) {
+         else if (levelManager.gameState == levelManager.gameOverState) {
             drawGameOverScreen(g2);
         }
+        
 
         g2.dispose();
     }
