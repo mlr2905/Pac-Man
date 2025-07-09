@@ -1,10 +1,10 @@
-package managers;
+package controller.managers;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class ScoreManager {
 

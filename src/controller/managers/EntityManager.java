@@ -1,7 +1,7 @@
-package managers;
+package controller.managers;
 
 import entity.ghost.Ghost;
-import view.GamePanel;
+import view.game.GamePanel;
 import collectibles.Collectable;
 import controller.strategy.BlinkyTargetingStrategy;
 import controller.strategy.ClydeTargetingStrategy;
@@ -38,10 +38,10 @@ public class EntityManager {
         int startTileY = 7;
         int tileSize = gp.tileSize;
 
-        gp.blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-        gp.pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-        gp.inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-        gp.clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+        gp.blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize,2);
+        gp.pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize,2);
+        gp.inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize,2);
+        gp.clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize,2);
     }
 
     public void update() {

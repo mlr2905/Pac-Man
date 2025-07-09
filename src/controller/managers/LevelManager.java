@@ -1,11 +1,12 @@
-package managers;
+package controller.managers;
 
 import java.awt.Graphics2D; 
 import java.awt.Color;    
 import java.awt.Font;
 
 import collectibles.Collectable;
-import view.GamePanel;
+import entity.state.FrightenedState;
+import view.game.GamePanel;
 
 public class LevelManager {
 
@@ -21,6 +22,10 @@ public class LevelManager {
     public LevelManager(GamePanel gp) {
         this.gp = gp;
         this.gameState = playState; 
+    }
+
+    public LevelManager(FrightenedState frightenedState) {
+        //TODO Auto-generated constructor stub
     }
 
     public int getCurrentLevel() {

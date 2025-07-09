@@ -1,4 +1,4 @@
-package view;
+package view.game;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,6 +17,11 @@ import javax.swing.JPanel;
 
 import collectibles.Collectable;
 import controller.KeyHandler;
+import controller.managers.EntityManager;
+import controller.managers.FruitManager;
+import controller.managers.LevelManager;
+import controller.managers.PowerPelletManager;
+import controller.managers.ScoreManager;
 import controller.strategy.BlinkyTargetingStrategy;
 import controller.strategy.ClydeTargetingStrategy;
 import controller.strategy.InkyTargetingStrategy;
@@ -25,11 +30,7 @@ import controller.strategy.TargetingStrategy;
 import entity.ghost.Ghost;
 import entity.pacman.PacMan;
 import entity.state.ExitingHouseState;
-import managers.EntityManager;
-import managers.LevelManager;
-import managers.ScoreManager;
-import managers.PowerPelletManager;
-import managers.FruitManager; // הוספה חדשה
+import entity.state.FrightenedState;
 import map.MapData;
 import tile.TileManager;
 
@@ -52,8 +53,8 @@ public class GamePanel extends JPanel implements Runnable {
     public LevelManager levelManager;
     public PowerPelletManager powerPelletManager;
     public FruitManager fruitManager; // הוספה חדשה
+    public FrightenedState frightenedState;
     public int lives;
-
     public PacMan pacMan;
     public Ghost blinky;
     public Ghost pinky;
@@ -62,13 +63,13 @@ public class GamePanel extends JPanel implements Runnable {
     public ArrayList<Collectable> collectables = new ArrayList<>();
     public int[] teleport1 = null;
     public int[] teleport2 = null;
-
+    private int timefrightened ;
+    public int speedGhost =2;
     public BufferedImage lifeImage;
 
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;
     public EntityManager entityManager;
-
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.gray);
@@ -80,7 +81,8 @@ public class GamePanel extends JPanel implements Runnable {
         scoreM = new ScoreManager(this);
         levelManager = new LevelManager(this);
         powerPelletManager = new PowerPelletManager();
-        fruitManager = new FruitManager(this); // הוספה חדשה
+        fruitManager = new FruitManager(this); 
+        frightenedState = new FrightenedState();
         lives = 3;
         pacMan = new PacMan(this, keyH);
 
@@ -182,17 +184,17 @@ public class GamePanel extends JPanel implements Runnable {
             levelManager.gameState = levelManager.gameOverState;
         } else {
             pacMan.setDefaultValues();
-            GhostsetDefaultValues();
+            GhostsetDefaultValues(speedGhost);
         }
     }
 
-    public void GhostsetDefaultValues() {
+    public void GhostsetDefaultValues(int speed) {
         int startTileX = 18;
         int startTileY = 7;
-        blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-        pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-        inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
-        clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize);
+        blinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize,speed);
+        pinky.setDefaultValues(startTileX * tileSize, startTileY * tileSize,speed);
+        inky.setDefaultValues(startTileX * tileSize, startTileY * tileSize,speed);
+        clyde.setDefaultValues(startTileX * tileSize, startTileY * tileSize,speed);
     }
 
     public void restartGame() {
@@ -223,11 +225,7 @@ public class GamePanel extends JPanel implements Runnable {
         System.out.println("Game restarted! Level 1 started!");
     }
 
-    // הוספת מתודה חדשה לניהול מעבר לרמה הבאה
-    public void nextLevel() {
-        fruitManager.nextLevel();
-        // כאן תוכל להוסיף עוד לוגיקה לניהול רמות
-    }
+    
 
     public void startGameThread() {
         gameThread = new Thread(this);
@@ -257,7 +255,9 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-
+public FrightenedState createFrightenedState() {
+        return new FrightenedState();
+    }
     public void update() {
         if (levelManager.gameState == levelManager.playState) {
             pacMan.update();
@@ -269,7 +269,7 @@ public class GamePanel extends JPanel implements Runnable {
             inky.update();
             clyde.update();
 
-            fruitManager.update(); // הוספה חדשה
+            fruitManager.update();
             manageGhostExits();
             checkCollision();
             checkLevelComplete(); // בדיקת סיום שלב
@@ -293,14 +293,16 @@ public class GamePanel extends JPanel implements Runnable {
         
         if (allPelletsCollected) {
             System.out.println("Level Complete! All pellets collected!");
+            lives++;
             advanceToNextLevel();
+            
         }
     }
     
     // מעבר לשלב הבא
     private void advanceToNextLevel() {
         levelManager.currentLevel++;
-        
+        speedGhost++;
         if (levelManager.currentLevel > 3) {
             // ניצחון - סיום המשחק
             levelManager.gameState = levelManager.gameOverState;
@@ -322,7 +324,7 @@ public class GamePanel extends JPanel implements Runnable {
             
             // איפוס מיקומי השחקנים
             pacMan.setDefaultValues();
-            GhostsetDefaultValues();
+            GhostsetDefaultValues(speedGhost);
             
             // איפוס מנהל הפירות לשלב חדש
             fruitManager.nextLevel();
@@ -342,8 +344,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // הוספת מתודה להצגת מידע על פירות
-    private void drawFruitInfo(Graphics2D g2) {
+ 
+      private void drawFruitInfo(Graphics2D g2) {
         if (fruitManager.isFruitActive()) {
             g2.setFont(new Font("Arial", Font.PLAIN, 16));
             g2.setColor(Color.YELLOW);
@@ -355,6 +357,8 @@ public class GamePanel extends JPanel implements Runnable {
             long timeUntilMove = fruitManager.getTimeUntilNextMove() / 1000;
             String timeInfo = "Next move in: " + timeUntilMove + "s";
             g2.drawString(timeInfo, 300, 15);
+          
+
             
             // הצגת רצף הפירות
             g2.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -427,13 +431,12 @@ public class GamePanel extends JPanel implements Runnable {
             clyde.draw(g2);
             scoreM.draw(g2, levelManager.getCurrentLevel());
             drawLives(g2);
-            drawFruitInfo(g2); // הוספה חדשה
+            drawFruitInfo(g2);
         }
         
         if (levelManager.gameState == levelManager.gameOverState) {
-            if (levelManager.currentLevel == 3) {
+            if (levelManager.currentLevel == 4) {
                 drawGameOverScreen("YOU WIN", g2);
-                levelManager.currentLevel = 1;
             } else {
                 drawGameOverScreen("GAME OVER", g2);
             }

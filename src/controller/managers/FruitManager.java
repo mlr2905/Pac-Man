@@ -1,11 +1,11 @@
-package managers;
+package controller.managers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import collectibles.Fruit;
 import map.MapData;
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class FruitManager {
     
@@ -42,7 +42,6 @@ public class FruitManager {
         for (int row = 0; row < MapData.INITIAL_MAP_DATA.length; row++) {
             for (int col = 0; col < MapData.INITIAL_MAP_DATA[0].length; col++) {
                 if (MapData.INITIAL_MAP_DATA[row][col] == 0) {
-                    // בדיקה שאין Power Pellet (7) בסביבה הקרובה
                     if (!isPowerPelletNearby(row, col)) {
                         fruitSpawnPositions.add(new int[]{col, row});
                     }

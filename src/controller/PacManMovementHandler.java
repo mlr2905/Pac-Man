@@ -1,7 +1,7 @@
 package controller;
 
 import entity.pacman.PacMan;
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class PacManMovementHandler {
 

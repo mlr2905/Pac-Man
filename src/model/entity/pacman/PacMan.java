@@ -7,8 +7,8 @@ import java.awt.Color;
 
 import entity.Entity;
 import entity.ghost.Ghost;
-import view.GamePanel;
 import view.animations.PacManAnimationManager;
+import view.game.GamePanel;
 import collectibles.Collectable;
 import collectibles.Pellet;
 import collectibles.PowerPellet;

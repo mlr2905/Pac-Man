@@ -1,4 +1,4 @@
-package managers;
+package controller.managers;
 
 import entity.ghost.Ghost;
 import entity.state.FrightenedState;

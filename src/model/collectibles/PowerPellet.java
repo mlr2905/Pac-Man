@@ -4,10 +4,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import controller.managers.ScoreManager;
 import entity.Entity;
-import managers.ScoreManager;
-import managers.PowerPelletManager;
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class PowerPellet extends Entity implements Collectable {
 

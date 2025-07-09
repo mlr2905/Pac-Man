@@ -2,7 +2,7 @@ package controller.strategy;
 
 import entity.ghost.Ghost;
 import entity.pacman.PacMan;
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class InkyTargetingStrategy implements TargetingStrategy {
 

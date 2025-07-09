@@ -3,9 +3,9 @@ package collectibles;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import controller.managers.ScoreManager;
 import entity.Entity;
-import managers.ScoreManager;
-import view.GamePanel;
+import view.game.GamePanel;
 
 import java.awt.Rectangle;
 

@@ -3,7 +3,7 @@ package tile;
 import java.awt.Graphics2D;
 
 import map.MapLoader;
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class TileManager {
 

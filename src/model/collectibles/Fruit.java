@@ -4,8 +4,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import managers.ScoreManager;
-import view.GamePanel;
+
+import controller.managers.ScoreManager;
+import view.game.GamePanel;
 
 public class Fruit implements Collectable {
     

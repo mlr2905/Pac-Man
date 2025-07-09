@@ -2,7 +2,8 @@ package collectibles;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import managers.ScoreManager;
+
+import controller.managers.ScoreManager;
 
 public interface Collectable {
     void update();

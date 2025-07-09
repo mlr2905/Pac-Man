@@ -1,7 +1,7 @@
 package map;
 
 import tile.TileSet;
-import view.GamePanel;
+import view.game.GamePanel;
 import collectibles.Pellet;
 import collectibles.PowerPellet;
 

@@ -1,8 +1,8 @@
 package entity.ghost;
 
 import map.MapData;
-import view.GamePanel;
 import view.animations.GhostAnimationManager;
+import view.game.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -59,15 +59,15 @@ public class Ghost extends Entity {
         this.exitScoreTrigger = exitScoreTrigger;
         this.targetingStrategy = targetingStrategy;
         
-        setDefaultValues(startX, startY);
+        setDefaultValues(startX, startY,2);
     }
     
 
 
-    public void setDefaultValues(int startX, int startY) {
+    public void setDefaultValues(int startX, int startY, int s) {
         this.x = startX;
         this.y = startY;
-        speed = 2;
+        speed = s;
         currentMovingDirection = "none";
         requestedDirection = "none";
         gameStartedForGhost = false;

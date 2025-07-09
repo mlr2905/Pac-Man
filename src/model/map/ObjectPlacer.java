@@ -5,7 +5,7 @@ import javax.imageio.ImageIO;
 
 import collectibles.Pellet;
 import collectibles.PowerPellet;
-import view.GamePanel;
+import view.game.GamePanel;
 
 public class ObjectPlacer {
 
