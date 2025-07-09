@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
+import controller.managers.SoundManager;
 import controller.strategy.TargetingStrategy;
 import entity.Entity;
 import entity.state.GhostState;
@@ -115,6 +116,8 @@ public class Ghost extends Entity {
         if (eaten) {
             this.frightenedMode = false; // חשוב: כבה את מצב הפחד
             System.out.println("Ghost is being eaten! Setting state to ReturningHomeState"); // Debug
+            SoundManager.getInstance().playSound("/view/resources/sounds/ReturnToHome.wav");
+
             setState(new ReturningHomeState());
         }
     }

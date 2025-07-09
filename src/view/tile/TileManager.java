@@ -1,9 +1,9 @@
-package tile;
+package view.tile;
 
 import java.awt.Graphics2D;
 
-import map.MapLoader;
 import view.game.GamePanel;
+import view.map.MapLoader;
 
 public class TileManager {
 

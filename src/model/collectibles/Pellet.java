@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import controller.managers.ScoreManager;
+import controller.managers.SoundManager;
 import entity.Entity;
 import view.game.GamePanel;
 
@@ -58,15 +59,23 @@ public class Pellet extends Entity implements Collectable {
         return solidArea;
     }
     
-    @Override
-    public void onCollected(ScoreManager sm) {
-        // ניתן לאסוף רק אם לא מוסתר זמנית
-        if (!temporarilyHidden) {
-            setCollected(true);
-            sm.addScore(10); // Specific score for a regular pellet
-            System.out.println("Pellet collected!");
+ @Override
+public void onCollected(ScoreManager sm) {
+    // ניתן לאסוף רק אם לא מוסתר זמנית
+    if (!temporarilyHidden) {
+        setCollected(true);
+        sm.addScore(10);
+        
+        // בדיקה אם עברו 5 שניות מהצליל האחרון
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - gp.getLastPelletSoundTime() >= gp.getPelletSoundCooldown()) {
+            SoundManager.getInstance().playSound("/view/resources/sounds/pellet.wav");
+            gp.setLastPelletSoundTime(currentTime);
         }
+        
+        System.out.println("Pellet collected!");
     }
+}
     
     // מתודות חדשות להסתרה זמנית
     public void setTemporarilyHidden(boolean hidden) {

@@ -15,6 +15,7 @@ import collectibles.PowerPellet;
 import collectibles.Fruit; // הוספה חדשה
 import controller.KeyHandler;
 import controller.PacManMovementHandler;
+import controller.managers.SoundManager;
 
 public class PacMan extends Entity {
 
@@ -49,7 +50,9 @@ public class PacMan extends Entity {
         x = gp.tileSize * 18;
         y = gp.tileSize * 10;
         speed = 3;
-        specialTileTriggered = false; // איפוס הדגל
+        specialTileTriggered = false; 
+    SoundManager.getInstance().playSound("/view/resources/sounds/newGame.wav");
+
     }
 
     public void update() {

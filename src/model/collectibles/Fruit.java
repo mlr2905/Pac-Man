@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import controller.managers.ScoreManager;
+import controller.managers.SoundManager;
 import view.game.GamePanel;
 
 public class Fruit implements Collectable {
@@ -90,6 +91,8 @@ public class Fruit implements Collectable {
         if (!isCollected() && isActive) {
             setCollected(true);
             scoreManager.addScore(fruitType.getPoints());
+                    SoundManager.getInstance().playSound("/view/resources/sounds/fruit.wav");
+
             System.out.println("Fruit collected! Type: " + fruitType.name() + 
                              ", Points: " + fruitType.getPoints());
         }

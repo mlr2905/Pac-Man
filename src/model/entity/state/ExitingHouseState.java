@@ -1,5 +1,6 @@
 package entity.state;
 
+import controller.managers.SoundManager;
 import entity.ghost.Ghost;
 
 public class ExitingHouseState implements GhostState {
@@ -8,7 +9,7 @@ public class ExitingHouseState implements GhostState {
     @Override
     public void update(Ghost ghost) {
         boolean movedToTarget = false;
-        
+
         switch (stage) {
             case 0: 
                 movedToTarget = ghost.moveToTarget(ghost.RETURN_TARGET_X, ghost.RETURN_TARGET_Y, Ghost.MovementRule.THROUGH_HOUSE_DOOR);

@@ -1,4 +1,4 @@
-package tile;
+package view.tile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,22 +18,25 @@ public class TileSet {
             BufferedImage emptyImage = loadImage("/view/resources/tiles/000.png");
             BufferedImage wallImage = loadImage("/view/resources/tiles/wall.png");
             BufferedImage doorImage = loadImage("/view/resources/tiles/door.png");
+            BufferedImage grayImage = loadImage("/view/resources/tiles/gray.png");
 
             this.pelletImage = loadImage("/view/resources/objects/pellet.png");
             this.powerPelletImage = loadImage("/view/resources/objects/powerPellet.png");
 
             this.defaultTile = new Tile(emptyImage, false);
 
-            this.tiles = new Tile[9];
+            this.tiles = new Tile[10];
             tiles[0] = defaultTile;
             tiles[1] = new Tile(wallImage, true);
             tiles[2] = defaultTile;
             tiles[3] = defaultTile;
             tiles[4] = new Tile(doorImage, true);
-            tiles[5] = defaultTile;
+            tiles[5] = new Tile(grayImage, false);
             tiles[6] = defaultTile;
             tiles[7] = defaultTile;
             tiles[8] = defaultTile;
+            tiles[9] = new Tile(wallImage, true);
+
 
         } catch (IOException e) {
             e.printStackTrace();

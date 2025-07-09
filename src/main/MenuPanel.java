@@ -6,8 +6,7 @@ import javax.swing.*;
 import HighScore.HighScore;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.util.List;
 import controller.managers.HighScoreManager;
 import view.game.GamePanel;
@@ -31,13 +30,11 @@ public class MenuPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         
+
         // קביעת גודל התפריט
         setPreferredSize(new Dimension(1140, 570)); // גודל זהה ל-GamePanel
-        // או לחלופין גודל יותר גדול:
-        // setPreferredSize(new Dimension(1400, 800));
-        
-        // כותרת
-        JLabel titleLabel = new JLabel("PAC-MAN", SwingConstants.CENTER);
+      
+        JLabel titleLabel = new JLabel("SpongeBob-style Pac-Man", SwingConstants.CENTER);
         titleLabel.setFont(titleFont);
         titleLabel.setForeground(Color.YELLOW);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(50, 0, 50, 0));
@@ -105,7 +102,7 @@ public class MenuPanel extends JPanel {
     
     private void showHighScores() {
         JDialog dialog = new JDialog(parentFrame, "High Scores", true);
-        dialog.setSize(500, 400);
+        dialog.setSize(500, 432);
         dialog.setLocationRelativeTo(parentFrame);
         dialog.getContentPane().setBackground(Color.BLACK);
         

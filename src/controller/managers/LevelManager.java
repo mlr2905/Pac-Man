@@ -69,7 +69,7 @@ public class LevelManager {
     }
 
     private void loadNextLevel() {
-        gp.tileM = new tile.TileManager(gp); 
+        gp.tileM = new view.tile.TileManager(gp); 
         gp.pacMan.setDefaultValues();
         System.out.println("Level " + currentLevel + " loaded.");
     }

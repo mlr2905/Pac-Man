@@ -34,11 +34,10 @@ public class ScoreManager {
         g2.setColor(Color.WHITE);
 
         String scoreText = "Score: " + score;
-        g2.drawString(scoreText, 10, gp.tileSize);
+        g2.drawString(scoreText, 10, 20);
 
         String levelText = "Level: " + currentLevel;
         int x = gp.screenWidth - g2.getFontMetrics().stringWidth(levelText) - 10;
-        int y = gp.tileSize;
-        g2.drawString(levelText, x, y);
+        g2.drawString(levelText, x, 20);
     }
 }

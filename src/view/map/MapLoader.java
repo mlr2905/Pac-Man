@@ -1,9 +1,10 @@
-package map;
+package view.map;
 
-import tile.TileSet;
 import view.game.GamePanel;
+import view.tile.TileSet;
 import collectibles.Pellet;
 import collectibles.PowerPellet;
+import map.MapData;
 
 public class MapLoader {
    
@@ -21,8 +22,14 @@ public class MapLoader {
                 
                 mapLayout[row][col] = tileType;
 
-                if (tileType == 0) {
+                if (tileType == 0  ) {
+                    if (row ==10 && col ==18) {
+                        
+                    }
+                    else{
                     gp.collectables.add(new Pellet(gp, col * gp.tileSize, row * gp.tileSize, tileSet.getPelletImage()));
+
+                    }
                 } else if (tileType == 7) { 
                     gp.collectables.add(new PowerPellet(gp, col * gp.tileSize, row * gp.tileSize, tileSet.getPowerPelletImage()));
                 }

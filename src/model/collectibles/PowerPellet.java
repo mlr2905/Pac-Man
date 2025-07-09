@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import controller.managers.ScoreManager;
+import controller.managers.SoundManager;
 import entity.Entity;
 import view.game.GamePanel;
 
@@ -70,7 +71,8 @@ public class PowerPellet extends Entity implements Collectable {
     public void onCollected(ScoreManager sm) {
         setCollected(true);
         sm.addScore(50); // Score for a power pellet
-        
+        SoundManager.getInstance().playSound("/view/resources/sounds/powerPellet.wav");
+
         // Activate frightened mode for all ghosts
         if (gp.powerPelletManager != null) {
             gp.powerPelletManager.activatePowerMode(gp.getAllGhosts());

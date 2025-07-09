@@ -1,5 +1,6 @@
 package entity.state;
 
+import controller.managers.SoundManager;
 import entity.ghost.Ghost;
 
 public class WaitingState implements GhostState {
@@ -22,7 +23,7 @@ public class WaitingState implements GhostState {
 
     @Override
     public void update(Ghost ghost) {
-        
+
         if (isWaitingAfterEaten) {
             // Count down 3 seconds before automatically exiting
             waitTimer++;

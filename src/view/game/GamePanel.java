@@ -22,6 +22,7 @@ import controller.managers.FruitManager;
 import controller.managers.LevelManager;
 import controller.managers.PowerPelletManager;
 import controller.managers.ScoreManager;
+import controller.managers.SoundManager;
 import controller.managers.HighScoreManager;
 import controller.strategy.BlinkyTargetingStrategy;
 import controller.strategy.ClydeTargetingStrategy;
@@ -33,7 +34,7 @@ import entity.pacman.PacMan;
 import entity.state.ExitingHouseState;
 import entity.state.FrightenedState;
 import map.MapData;
-import tile.TileManager;
+import view.tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -44,7 +45,11 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenRow = 19;
     public final int screenWidth = tileSize * maxScreenCol;
     public final int screenHeight = tileSize * maxScreenRow;
-
+    private long lastPelletSoundTime = 0;
+    private final long PELLET_SOUND_COOLDOWN = 1000;
+    private long lastGhostExitSoundTime = 0;
+    private final long GHOST_EXIT_SOUND_COOLDOWN = 5500;
+    private SoundManager soundManager;
     int FPS = 60;
     Thread gameThread;
     public KeyHandler keyH;
@@ -71,7 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
     private Queue<Ghost> exitQueue = new LinkedList<>();
     private boolean isExitingLaneBusy = false;
     public EntityManager entityManager;
-    
+
     // הוספות למערכת השיאים
     private HighScoreManager highScoreManager;
     private boolean gameEndedWithHighScore = false;
@@ -82,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.gray);
         this.setDoubleBuffered(true);
-        
+
         // יצירת KeyHandler עם הפניה לGamePanel
         keyH = new KeyHandler(this);
         this.addKeyListener(keyH);
@@ -107,16 +112,16 @@ public class GamePanel extends JPanel implements Runnable {
             System.err.println("Error loading life image!");
         }
     }
-    
+
     // מתודות למערכת השיאים
     public void setHighScoreManager(HighScoreManager highScoreManager) {
         this.highScoreManager = highScoreManager;
     }
-    
+
     public boolean isEnteringName() {
         return enteringName;
     }
-    
+
     public void handleNameInput(char keyChar) {
         if (keyChar == '\n' || keyChar == '\r') { // Enter pressed
             if (!playerName.trim().isEmpty()) {
@@ -130,22 +135,22 @@ public class GamePanel extends JPanel implements Runnable {
             if (playerName.length() > 0) {
                 playerName = playerName.substring(0, playerName.length() - 1);
             }
-        } else if (Character.isLetterOrDigit(keyChar) || keyChar == ' ' || 
-                  (keyChar >= 0x0590 && keyChar <= 0x05FF)) { // תמיכה בעברית
+        } else if (Character.isLetterOrDigit(keyChar) || keyChar == ' ' ||
+                (keyChar >= 0x0590 && keyChar <= 0x05FF)) { // תמיכה בעברית
             if (playerName.length() < 20) { // הגבלת אורך השם
                 playerName += keyChar;
             }
         }
     }
-    
+
     private void checkForHighScore() {
         int finalScore = scoreM.getScore();
-        
+
         if (highScoreManager != null && highScoreManager.isHighScore(finalScore)) {
             gameEndedWithHighScore = true;
             enteringName = true;
             playerName = "";
-            this.requestFocus(); // וידוא שהפוקוס נמצא ב-GamePanel
+            this.requestFocus();
             System.out.println("New High Score! Enter your name...");
         } else {
             levelManager.gameState = levelManager.gameOverState;
@@ -162,9 +167,9 @@ public class GamePanel extends JPanel implements Runnable {
         int startTileY = 7;
 
         blinky = new Ghost(this, "blinky", startTileX * tileSize, startTileY * tileSize, 100, blinkyStrategy);
-        pinky = new Ghost(this, "pinky", startTileX * tileSize, startTileY * tileSize, 200, pinkyStrategy);
-        inky = new Ghost(this, "inky", startTileX * tileSize, startTileY * tileSize, 300, inkyStrategy);
-        clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 400, clydeStrategy);
+        pinky = new Ghost(this, "pinky", startTileX * tileSize, startTileY * tileSize, 350, pinkyStrategy);
+        inky = new Ghost(this, "inky", startTileX * tileSize, startTileY * tileSize, 700, inkyStrategy);
+        clyde = new Ghost(this, "clyde", startTileX * tileSize, startTileY * tileSize, 950, clydeStrategy);
     }
 
     public List<Ghost> getAllGhosts() {
@@ -199,13 +204,21 @@ public class GamePanel extends JPanel implements Runnable {
         this.isExitingLaneBusy = busy;
     }
 
-    public void manageGhostExits() {
-        if (!isExitingLaneBusy && !exitQueue.isEmpty()) {
-            Ghost ghostToExit = exitQueue.poll();
-            isExitingLaneBusy = true;
-            ghostToExit.setState(new ExitingHouseState());
+  public void manageGhostExits() {
+    if (!isExitingLaneBusy && !exitQueue.isEmpty()) {
+        Ghost ghostToExit = exitQueue.poll();
+        isExitingLaneBusy = true;
+        
+        // בדיקה אם עברו 6 שניות מהצליל האחרון
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastGhostExitSoundTime >= GHOST_EXIT_SOUND_COOLDOWN) {
+            SoundManager.getInstance().playSound("/view/resources/sounds/GhostChasing.wav");
+            lastGhostExitSoundTime = currentTime;
         }
+        
+        ghostToExit.setState(new ExitingHouseState());
     }
+}
 
     private void checkCollision() {
         Rectangle pacManBounds = new Rectangle(pacMan.x + pacMan.solidArea.x, pacMan.y + pacMan.solidArea.y,
@@ -220,11 +233,16 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (pacManBounds.intersects(ghostBounds)) {
                 if (ghost.isFrightened() && !ghost.isEaten()) {
+
                     ghost.setEaten(true);
+                    SoundManager.getInstance().playSound("/view/resources/sounds/eatingGhosts.wav");
+
                     int score = powerPelletManager.getGhostEatenScore();
                     scoreM.addScore(score);
                     System.out.println("Ghost eaten! Score: " + score);
                 } else if (!ghost.isFrightened() && !ghost.isEaten()) {
+                    SoundManager.getInstance().playSound("/view/resources/sounds/eatingGhosts.wav");
+
                     pacManHit();
                     break;
                 }
@@ -236,6 +254,8 @@ public class GamePanel extends JPanel implements Runnable {
         lives--;
 
         if (lives <= 0) {
+            SoundManager.getInstance().playSound("/view/resources/sounds/gameover.wav");
+
             checkForHighScore(); // בדיקת שיא במקום הקצאה ישירה למצב גיים אובר
         } else {
             pacMan.setDefaultValues();
@@ -275,7 +295,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         exitQueue.clear();
         isExitingLaneBusy = false;
-        
+
         // איפוס משתני השיאים
         gameEndedWithHighScore = false;
         enteringName = false;
@@ -315,6 +335,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public FrightenedState createFrightenedState() {
+
         return new FrightenedState();
     }
 
@@ -323,7 +344,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (enteringName) {
             return;
         }
-        
+
         if (levelManager.gameState == levelManager.playState) {
             pacMan.update();
             for (Collectable item : collectables) {
@@ -368,7 +389,8 @@ public class GamePanel extends JPanel implements Runnable {
         levelManager.currentLevel++;
         speedGhost++;
         if (levelManager.currentLevel > 3) {
-            // ניצחון - בדיקת שיא
+            SoundManager.getInstance().playSound("/view/resources/sounds/gameover.wav");
+
             checkForHighScore();
             System.out.println("Game Complete! You Win!");
         } else {
@@ -397,7 +419,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (lifeImage == null)
             return;
         for (int i = 0; i < lives; i++) {
-            g2.drawImage(lifeImage, tileSize * (i + 1), screenHeight - tileSize - 10, tileSize, tileSize, null);
+            g2.drawImage(lifeImage, tileSize * (i + 1), 540, tileSize, 30, null);
         }
     }
 
@@ -442,31 +464,24 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawString(text, x, y + 60);
     }
 
-    public void drawYouWin(Graphics2D g2) {
-        g2.setColor(new Color(0, 0, 0, 150));
-        g2.fillRect(0, 0, screenWidth, screenHeight);
-
-        g2.setFont(new Font("Arial", Font.BOLD, 80));
-        g2.setColor(Color.green);
-
-        String text = "YOU WIN";
-        int x = getXforCenteredText(text, g2);
-        int y = screenHeight / 2;
-        g2.drawString(text, x, y);
-
-        g2.setFont(new Font("Arial", Font.PLAIN, 30));
-        g2.setColor(Color.white);
-        text = "Press Enter to Restart";
-        x = getXforCenteredText(text, g2);
-        g2.drawString(text, x, y + 60);
+    public long getLastPelletSoundTime() {
+        return lastPelletSoundTime;
     }
-    
+
+    public void setLastPelletSoundTime(long time) {
+        this.lastPelletSoundTime = time;
+    }
+
+    public long getPelletSoundCooldown() {
+        return PELLET_SOUND_COOLDOWN;
+    }
+
     // מתודה חדשה לציור מסך הכנסת שם
     private void drawNameInputScreen(Graphics2D g2) {
         // רקע
         g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(0, 0, screenWidth, screenHeight);
-        
+
         // כותרת
         g2.setFont(new Font("Arial", Font.BOLD, 60));
         g2.setColor(Color.YELLOW);
@@ -474,32 +489,32 @@ public class GamePanel extends JPanel implements Runnable {
         int x = getXforCenteredText(title, g2);
         int y = screenHeight / 2 - 100;
         g2.drawString(title, x, y);
-        
+
         // תצוגת ניקוד
         g2.setFont(new Font("Arial", Font.BOLD, 40));
         g2.setColor(Color.WHITE);
         String scoreText = "Score: " + scoreM.getScore();
         x = getXforCenteredText(scoreText, g2);
         g2.drawString(scoreText, x, y + 60);
-        
+
         // בקשת שם
         g2.setFont(new Font("Arial", Font.PLAIN, 30));
         String prompt = "Enter your name:";
         x = getXforCenteredText(prompt, g2);
         g2.drawString(prompt, x, y + 120);
-        
+
         // תיבת טקסט
         g2.setColor(Color.WHITE);
         g2.fillRect(screenWidth / 2 - 150, y + 140, 300, 40);
         g2.setColor(Color.BLACK);
         g2.drawRect(screenWidth / 2 - 150, y + 140, 300, 40);
-        
+
         // הצגת השם שנכתב - פונט שתומך בעברית
         g2.setFont(new Font("SansSerif", Font.PLAIN, 24));
         g2.setColor(Color.BLACK);
         String displayName = playerName + "_"; // קו תחתון מהבהב
         g2.drawString(displayName, screenWidth / 2 - 140, y + 165);
-        
+
         // הוראות
         g2.setFont(new Font("Arial", Font.PLAIN, 18));
         g2.setColor(Color.CYAN);
@@ -533,7 +548,7 @@ public class GamePanel extends JPanel implements Runnable {
             drawLives(g2);
             drawFruitInfo(g2);
         }
-        
+
         if (enteringName) {
             drawNameInputScreen(g2);
         } else if (levelManager.gameState == levelManager.gameOverState) {
